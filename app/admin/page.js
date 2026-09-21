@@ -216,7 +216,7 @@ const TABS = [
   { id: "skills", label: "스킬" },
   { id: "career", label: "경력" },
   { id: "projects", label: "프로젝트" },
-  { id: "videos", label: "영상" },
+  { id: "videos", label: "포트폴리오" },
   { id: "awards", label: "수상" },
   { id: "certifications", label: "자격증" },
   { id: "education", label: "학력" },
@@ -673,7 +673,7 @@ export default function AdminPage() {
         {/* Videos */}
         {show("videos") && (
           <section className="a-section">
-            <h2>영상</h2>
+            <h2>포트폴리오</h2>
             <p className="admin-note" style={{ marginBottom: 16 }}>
               유튜브 링크를 넣으면 페이지에서 바로 재생돼요. 다른 링크는 클릭시
               새 탭으로 열리는 카드로 표시돼요.

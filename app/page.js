@@ -171,7 +171,7 @@ export default async function Home() {
     { id: "skills", label: "스킬", show: skillGroups?.length > 0 },
     { id: "career", label: "경력", show: career?.length > 0 },
     { id: "projects", label: "프로젝트", show: projects?.length > 0 },
-    { id: "videos", label: "영상", show: videos?.length > 0 },
+    { id: "videos", label: "포트폴리오", show: videos?.length > 0 },
     { id: "awards", label: "수상", show: awards?.length > 0 },
     { id: "certifications", label: "자격증", show: certifications?.length > 0 },
     { id: "education", label: "학력", show: education?.length > 0 },
@@ -325,7 +325,7 @@ export default async function Home() {
 
         {videos?.length > 0 && (
           <section id="videos">
-            <SectionHead ko="영상" en="Videos" />
+            <SectionHead ko="포트폴리오" en="Portfolio" />
             <div className="video-grid">
               {videos.map((v, i) => {
                 const embedUrl = getYouTubeEmbedUrl(v.url);
