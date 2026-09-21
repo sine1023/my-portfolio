@@ -80,6 +80,7 @@ export default async function Home() {
     projects,
     videos,
     awards,
+    certifications,
     education,
     contact,
     devProjects,
@@ -87,8 +88,11 @@ export default async function Home() {
 
   return (
     <main>
-      <a href="/admin" className="top-admin-link">
-        로그인
+      <a href="/admin" className="top-admin-link" aria-label="관리자 로그인">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2">
+          <rect x="5" y="11" width="14" height="9" rx="2" />
+          <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+        </svg>
       </a>
       <div className="wrap">
         <section className="hero" style={{ borderTop: "none" }}>
@@ -264,6 +268,30 @@ export default async function Home() {
           </section>
         )}
 
+        {certifications?.length > 0 && (
+          <section id="certifications">
+            <SectionHead ko="자격증" en="Certifications" />
+            <table className="doc-table">
+              <thead>
+                <tr>
+                  <th>자격명</th>
+                  <th>발급기관</th>
+                  <th>취득일</th>
+                </tr>
+              </thead>
+              <tbody>
+                {certifications.map((a, i) => (
+                  <tr key={i}>
+                    <td>{a.name}</td>
+                    <td>{a.org}</td>
+                    <td>{a.year}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </section>
+        )}
+
         {education?.length > 0 && (
           <section id="education">
             <SectionHead ko="학력" en="Education" />
@@ -332,7 +360,6 @@ export default async function Home() {
       <div className="wrap">
         <footer>
           <span>&copy; {new Date().getFullYear()} {hero?.name}</span>
-          <a href="/admin">로그인</a>
         </footer>
       </div>
     </main>

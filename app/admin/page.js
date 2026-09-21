@@ -553,6 +553,73 @@ export default function AdminPage() {
         </button>
       </section>
 
+      {/* Certifications */}
+      <section className="a-section">
+        <h2>자격증</h2>
+        {(c.certifications || []).map((row, i) => (
+          <div className="a-row a-row3" key={i}>
+            <input
+              value={row.name}
+              placeholder="자격명"
+              onChange={(e) =>
+                setPath((p) => {
+                  const arr = [...p.certifications];
+                  arr[i] = { ...arr[i], name: e.target.value };
+                  return { ...p, certifications: arr };
+                })
+              }
+            />
+            <input
+              value={row.org}
+              placeholder="발급기관"
+              onChange={(e) =>
+                setPath((p) => {
+                  const arr = [...p.certifications];
+                  arr[i] = { ...arr[i], org: e.target.value };
+                  return { ...p, certifications: arr };
+                })
+              }
+            />
+            <input
+              value={row.year}
+              placeholder="취득일"
+              onChange={(e) =>
+                setPath((p) => {
+                  const arr = [...p.certifications];
+                  arr[i] = { ...arr[i], year: e.target.value };
+                  return { ...p, certifications: arr };
+                })
+              }
+            />
+            <button
+              className="a-del"
+              onClick={() =>
+                setPath((p) => ({
+                  ...p,
+                  certifications: p.certifications.filter((_, j) => j !== i),
+                }))
+              }
+            >
+              삭제
+            </button>
+          </div>
+        ))}
+        <button
+          className="a-add"
+          onClick={() =>
+            setPath((p) => ({
+              ...p,
+              certifications: [
+                ...(p.certifications || []),
+                { name: "", org: "", year: "" },
+              ],
+            }))
+          }
+        >
+          + 자격증 추가
+        </button>
+      </section>
+
       {/* Education */}
       <section className="a-section">
         <h2>학력</h2>
