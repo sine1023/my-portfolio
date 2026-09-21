@@ -288,6 +288,7 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("hero");
   const [draggedVideoIndex, setDraggedVideoIndex] = useState(null);
+  const [expandedVideos, setExpandedVideos] = useState({});
 
   async function handleUnlock(pw) {
     setPassword(pw);
@@ -733,109 +734,182 @@ export default function AdminPage() {
               유튜브 링크를 넣으면 페이지에서 바로 재생돼요. 다른 링크는 클릭시
               새 탭으로 열리는 카드로 표시돼요.
             </p>
-            {(c.videos || []).map((row, i) => (
-              <div
-                className={
-                  "a-card a-draggable" +
-                  (draggedVideoIndex === i ? " dragging" : "")
-                }
-                key={i}
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={(e) => {
-                  e.preventDefault();
-                  if (draggedVideoIndex === null || draggedVideoIndex === i) {
-                    setDraggedVideoIndex(null);
-                    return;
-                  }
-                  setPath((p) => {
-                    const arr = [...p.videos];
-                    const [moved] = arr.splice(draggedVideoIndex, 1);
-                    arr.splice(i, 0, moved);
-                    return { ...p, videos: arr };
-                  });
-                  setDraggedVideoIndex(null);
-                }}
-              >
+            {(c.videos || []).map((row, i) => {
+              const isOpen = !!expandedVideos[i];
+              const ytId = getYouTubeId(row.url);
+              return (
                 <div
-                  className="a-drag-handle"
-                  draggable
-                  onDragStart={() => setDraggedVideoIndex(i)}
-                  onDragEnd={() => setDraggedVideoIndex(null)}
-                  title="끌어서 순서 바꾸기"
-                >
-                  ⠿ 끌어서 이동
-                </div>
-                <Field
-                  label="제목"
-                  value={row.title}
-                  onChange={(v) =>
+                  className={
+                    "a-card a-draggable" +
+                    (draggedVideoIndex === i ? " dragging" : "")
+                  }
+                  key={i}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    if (draggedVideoIndex === null || draggedVideoIndex === i) {
+                      setDraggedVideoIndex(null);
+                      return;
+                    }
                     setPath((p) => {
                       const arr = [...p.videos];
-                      arr[i] = { ...arr[i], title: v };
+                      const [moved] = arr.splice(draggedVideoIndex, 1);
+                      arr.splice(i, 0, moved);
                       return { ...p, videos: arr };
-                    })
-                  }
-                />
-                <Field
-                  label="링크(URL)"
-                  value={row.url}
-                  onChange={(v) =>
-                    setPath((p) => {
-                      const arr = [...p.videos];
-                      arr[i] = { ...arr[i], url: v };
-                      return { ...p, videos: arr };
-                    })
-                  }
-                />
-                <VideoPreview url={row.url} />
-                <ContributionEditor
-                  items={row.contributions}
-                  onChange={(arr) =>
-                    setPath((p) => {
-                      const a = [...p.videos];
-                      a[i] = { ...a[i], contributions: arr };
-                      return { ...p, videos: a };
-                    })
-                  }
-                />
-                <div className="a-reorder">
-                  <button
-                    type="button"
-                    className="a-move"
-                    disabled={i === 0}
-                    onClick={() =>
-                      setPath((p) => ({
-                        ...p,
-                        videos: moveItem(p.videos, i, -1),
-                      }))
-                    }
-                  >
-                    ▲ 위로
-                  </button>
-                  <button
-                    type="button"
-                    className="a-move"
-                    disabled={i === (c.videos || []).length - 1}
-                    onClick={() =>
-                      setPath((p) => ({
-                        ...p,
-                        videos: moveItem(p.videos, i, 1),
-                      }))
-                    }
-                  >
-                    ▼ 아래로
-                  </button>
-                </div>
-                <button
-                  className="a-del"
-                  onClick={() =>
-                    setPath((p) => ({ ...p, videos: p.videos.filter((_, j) => j !== i) }))
-                  }
+                    });
+                    setDraggedVideoIndex(null);
+                  }}
                 >
-                  이 영상 삭제
-                </button>
-              </div>
-            ))}
+                  <div
+                    className="a-video-row"
+                    onClick={() =>
+                      setExpandedVideos((s) => ({ ...s, [i]: !s[i] }))
+                    }
+                  >
+                    <div
+                      className="a-drag-handle a-video-row-handle"
+                      draggable
+                      onClick={(e) => e.stopPropagation()}
+                      onDragStart={() => setDraggedVideoIndex(i)}
+                      onDragEnd={() => setDraggedVideoIndex(null)}
+                      title="끌어서 순서 바꾸기"
+                    >
+                      ⠿
+                    </div>
+                    {ytId ? (
+                      <img
+                        className="a-video-row-thumb"
+                        src={`https://img.youtube.com/vi/${ytId}/mqdefault.jpg`}
+                        alt=""
+                      />
+                    ) : (
+                      <div className="a-video-row-thumb a-video-row-thumb--empty">
+                        {row.url ? "링크" : "비어있음"}
+                      </div>
+                    )}
+                    <span className="a-video-row-title">
+                      {row.title || row.url || "(제목 없음)"}
+                    </span>
+                    <span className="a-video-row-toggle">
+                      {isOpen ? "▲ 접기" : "▼ 펼쳐서 수정"}
+                    </span>
+                  </div>
+
+                  {isOpen && (
+                    <div className="a-video-row-body">
+                      <Field
+                        label="제목"
+                        value={row.title}
+                        onChange={(v) =>
+                          setPath((p) => {
+                            const arr = [...p.videos];
+                            arr[i] = { ...arr[i], title: v };
+                            return { ...p, videos: arr };
+                          })
+                        }
+                      />
+                      <Field
+                        label="링크(URL)"
+                        value={row.url}
+                        onChange={(v) =>
+                          setPath((p) => {
+                            const arr = [...p.videos];
+                            arr[i] = { ...arr[i], url: v };
+                            return { ...p, videos: arr };
+                          })
+                        }
+                      />
+                      <VideoPreview url={row.url} />
+                      <ContributionEditor
+                        items={row.contributions}
+                        onChange={(arr) =>
+                          setPath((p) => {
+                            const a = [...p.videos];
+                            a[i] = { ...a[i], contributions: arr };
+                            return { ...p, videos: a };
+                          })
+                        }
+                      />
+                      <div className="a-reorder">
+                        <button
+                          type="button"
+                          className="a-move"
+                          disabled={i === 0}
+                          onClick={() =>
+                            setPath((p) => ({
+                              ...p,
+                              videos: moveItem(p.videos, i, -1),
+                            }))
+                          }
+                        >
+                          ▲ 위로
+                        </button>
+                        <button
+                          type="button"
+                          className="a-move"
+                          disabled={i === (c.videos || []).length - 1}
+                          onClick={() =>
+                            setPath((p) => ({
+                              ...p,
+                              videos: moveItem(p.videos, i, 1),
+                            }))
+                          }
+                        >
+                          ▼ 아래로
+                        </button>
+                      </div>
+                      <div className="a-reorder">
+                        <button
+                          type="button"
+                          className="a-move"
+                          onClick={() =>
+                            setPath((p) => {
+                              const arr = [...p.videos];
+                              arr.splice(i, 0, {
+                                title: "",
+                                url: "",
+                                contributions: [],
+                              });
+                              return { ...p, videos: arr };
+                            })
+                          }
+                        >
+                          + 이 위에 추가
+                        </button>
+                        <button
+                          type="button"
+                          className="a-move"
+                          onClick={() =>
+                            setPath((p) => {
+                              const arr = [...p.videos];
+                              arr.splice(i + 1, 0, {
+                                title: "",
+                                url: "",
+                                contributions: [],
+                              });
+                              return { ...p, videos: arr };
+                            })
+                          }
+                        >
+                          + 이 아래에 추가
+                        </button>
+                      </div>
+                      <button
+                        className="a-del"
+                        onClick={() =>
+                          setPath((p) => ({
+                            ...p,
+                            videos: p.videos.filter((_, j) => j !== i),
+                          }))
+                        }
+                      >
+                        이 영상 삭제
+                      </button>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
             <button
               className="a-add"
               onClick={() =>
