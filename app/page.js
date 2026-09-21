@@ -16,6 +16,28 @@ async function getContent() {
   return { ...defaultContent, ...data.data };
 }
 
+function getYouTubeEmbedUrl(url) {
+  if (!url) return null;
+  try {
+    const u = new URL(url);
+    let id = null;
+    if (u.hostname.includes("youtu.be")) {
+      id = u.pathname.slice(1);
+    } else if (u.hostname.includes("youtube.com")) {
+      if (u.pathname === "/watch") {
+        id = u.searchParams.get("v");
+      } else if (u.pathname.startsWith("/shorts/")) {
+        id = u.pathname.split("/")[2];
+      } else if (u.pathname.startsWith("/embed/")) {
+        id = u.pathname.split("/")[2];
+      }
+    }
+    return id ? `https://www.youtube.com/embed/${id}` : null;
+  } catch {
+    return null;
+  }
+}
+
 function SectionHead({ ko, en }) {
   return (
     <div className="section-head">
@@ -148,17 +170,35 @@ export default async function Home() {
           <section id="videos">
             <SectionHead ko="영상" en="Videos" />
             <div className="video-grid">
-              {videos.map((v, i) => (
-                <a
-                  className="video-slot"
-                  href={v.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  key={i}
-                >
-                  {v.title}
-                </a>
-              ))}
+              {videos.map((v, i) => {
+                const embedUrl = getYouTubeEmbedUrl(v.url);
+                if (embedUrl) {
+                  return (
+                    <div className="video-item" key={i}>
+                      <div className="video-slot video-embed">
+                        <iframe
+                          src={embedUrl}
+                          title={v.title || "video"}
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                          allowFullScreen
+                        />
+                      </div>
+                      {v.title && <p className="video-caption">{v.title}</p>}
+                    </div>
+                  );
+                }
+                return (
+                  <a
+                    className="video-slot"
+                    href={v.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    key={i}
+                  >
+                    {v.title}
+                  </a>
+                );
+              })}
             </div>
           </section>
         )}

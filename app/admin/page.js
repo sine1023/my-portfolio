@@ -429,6 +429,10 @@ export default function AdminPage() {
       {/* Videos */}
       <section className="a-section">
         <h2>영상</h2>
+        <p className="admin-note" style={{ marginBottom: 16 }}>
+          유튜브 링크를 넣으면 페이지에서 바로 재생돼요. 다른 링크는 클릭시
+          새 탭으로 열리는 카드로 표시돼요.
+        </p>
         {(c.videos || []).map((row, i) => (
           <div className="a-row" key={i}>
             <input
