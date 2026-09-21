@@ -84,6 +84,7 @@ export default async function Home() {
     education,
     contact,
     devProjects,
+    coverLetter,
   } = content;
 
   return (
@@ -313,6 +314,21 @@ export default async function Home() {
                 ))}
               </tbody>
             </table>
+          </section>
+        )}
+
+        {coverLetter?.length > 0 && (
+          <section id="cover-letter">
+            <SectionHead ko="자기소개서" en="Cover Letter" />
+            {coverLetter.map((entry, i) => (
+              <div className="letter-entry" key={i}>
+                <h3>{entry.label}</h3>
+                {entry.subtitle && (
+                  <p className="letter-subtitle">{entry.subtitle}</p>
+                )}
+                <p className="letter-body">{entry.body}</p>
+              </div>
+            ))}
           </section>
         )}
 

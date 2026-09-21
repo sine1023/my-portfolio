@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { supabase } from "../../lib/supabaseClient";
 import defaultContent from "../../lib/defaultContent";
 
@@ -91,12 +91,29 @@ function LoginGate({ onUnlock }) {
   );
 }
 
+const TABS = [
+  { id: "hero", label: "히어로" },
+  { id: "intro", label: "자기소개" },
+  { id: "profile", label: "프로필 카드" },
+  { id: "skills", label: "스킬" },
+  { id: "career", label: "경력" },
+  { id: "projects", label: "프로젝트" },
+  { id: "videos", label: "영상" },
+  { id: "awards", label: "수상" },
+  { id: "certifications", label: "자격증" },
+  { id: "education", label: "학력" },
+  { id: "coverLetter", label: "자기소개서" },
+  { id: "contact", label: "연락처" },
+  { id: "devProjects", label: "사이드 프로젝트" },
+];
+
 export default function AdminPage() {
   const [unlocked, setUnlocked] = useState(false);
   const [content, setContent] = useState(null);
   const [password, setPassword] = useState("");
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState("hero");
 
   async function handleUnlock(pw) {
     setPassword(pw);
@@ -152,636 +169,746 @@ export default function AdminPage() {
     }
   }
 
+  const show = (id) => activeTab === id;
+
   return (
-    <div className="admin-wrap">
+    <div className="admin-wrap admin-wrap--tabs">
       <a href="/" className="a-back">
         ← 홈으로
       </a>
       <h1>관리자 페이지</h1>
       <p className="admin-note">
-        내용을 수정한 뒤 맨 아래에서 비밀번호를 입력하고 저장하세요. 저장하면
-        바로 사이트에 반영됩니다.
+        탭에서 섹션을 고른 뒤 수정하고, 화면 아래 저장 버튼으로 언제든
+        저장하세요.
       </p>
 
-      {/* Hero */}
-      <section className="a-section">
-        <h2>히어로</h2>
-        <Field
-          label="역할 (예: VIDEO PD)"
-          value={c.hero?.role}
-          onChange={(v) => setPath((p) => ({ ...p, hero: { ...p.hero, role: v } }))}
-        />
-        <Field
-          label="이름"
-          value={c.hero?.name}
-          onChange={(v) => setPath((p) => ({ ...p, hero: { ...p.hero, name: v } }))}
-        />
-        <Field
-          label="한 줄 소개"
-          value={c.hero?.tagline}
-          onChange={(v) => setPath((p) => ({ ...p, hero: { ...p.hero, tagline: v } }))}
-          textarea
-        />
-      </section>
+      <div className="a-tabs">
+        {TABS.map((t) => (
+          <button
+            key={t.id}
+            className={"a-tab" + (show(t.id) ? " active" : "")}
+            onClick={() => setActiveTab(t.id)}
+            type="button"
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
 
-      {/* Intro */}
-      <section className="a-section">
-        <h2>자기소개 본문</h2>
-        <Field
-          label="소개 문단"
-          value={c.intro}
-          onChange={(v) => setPath((p) => ({ ...p, intro: v }))}
-          textarea
-          rows={10}
-        />
-      </section>
+      <div className="a-panel">
+        {/* Hero */}
+        {show("hero") && (
+          <section className="a-section">
+            <h2>히어로</h2>
+            <Field
+              label="역할 (예: VIDEO PD)"
+              value={c.hero?.role}
+              onChange={(v) => setPath((p) => ({ ...p, hero: { ...p.hero, role: v } }))}
+            />
+            <Field
+              label="이름"
+              value={c.hero?.name}
+              onChange={(v) => setPath((p) => ({ ...p, hero: { ...p.hero, name: v } }))}
+            />
+            <Field
+              label="한 줄 소개"
+              value={c.hero?.tagline}
+              onChange={(v) => setPath((p) => ({ ...p, hero: { ...p.hero, tagline: v } }))}
+              textarea
+            />
+          </section>
+        )}
 
-      {/* Profile KV groups */}
-      {["basic", "career", "contact"].map((key) => (
-        <section className="a-section" key={key}>
-          <h2>
-            프로필 카드 —{" "}
-            {key === "basic" ? "기본정보" : key === "career" ? "경력요약" : "연락처"}
-          </h2>
-          {(c.profile?.[key] || []).map((row, i) => (
-            <div className="a-row" key={i}>
-              <input
-                value={row.k}
-                placeholder="항목명 (예: 이름)"
-                onChange={(e) =>
-                  setPath((p) => {
-                    const arr = [...p.profile[key]];
-                    arr[i] = { ...arr[i], k: e.target.value };
-                    return { ...p, profile: { ...p.profile, [key]: arr } };
-                  })
-                }
-              />
-              <input
-                value={row.v}
-                placeholder="값"
-                onChange={(e) =>
-                  setPath((p) => {
-                    const arr = [...p.profile[key]];
-                    arr[i] = { ...arr[i], v: e.target.value };
-                    return { ...p, profile: { ...p.profile, [key]: arr } };
-                  })
-                }
-              />
+        {/* Intro */}
+        {show("intro") && (
+          <section className="a-section">
+            <h2>자기소개 본문</h2>
+            <Field
+              label="소개 문단"
+              value={c.intro}
+              onChange={(v) => setPath((p) => ({ ...p, intro: v }))}
+              textarea
+              rows={10}
+            />
+          </section>
+        )}
+
+        {/* Profile KV groups */}
+        {show("profile") &&
+          ["basic", "career", "contact"].map((key) => (
+            <section className="a-section" key={key}>
+              <h2>
+                프로필 카드 —{" "}
+                {key === "basic" ? "기본정보" : key === "career" ? "경력요약" : "연락처"}
+              </h2>
+              {(c.profile?.[key] || []).map((row, i) => (
+                <div className="a-row" key={i}>
+                  <input
+                    value={row.k}
+                    placeholder="항목명 (예: 이름)"
+                    onChange={(e) =>
+                      setPath((p) => {
+                        const arr = [...p.profile[key]];
+                        arr[i] = { ...arr[i], k: e.target.value };
+                        return { ...p, profile: { ...p.profile, [key]: arr } };
+                      })
+                    }
+                  />
+                  <input
+                    value={row.v}
+                    placeholder="값"
+                    onChange={(e) =>
+                      setPath((p) => {
+                        const arr = [...p.profile[key]];
+                        arr[i] = { ...arr[i], v: e.target.value };
+                        return { ...p, profile: { ...p.profile, [key]: arr } };
+                      })
+                    }
+                  />
+                  <button
+                    className="a-del"
+                    onClick={() =>
+                      setPath((p) => {
+                        const arr = p.profile[key].filter((_, j) => j !== i);
+                        return { ...p, profile: { ...p.profile, [key]: arr } };
+                      })
+                    }
+                  >
+                    삭제
+                  </button>
+                </div>
+              ))}
               <button
-                className="a-del"
+                className="a-add"
                 onClick={() =>
-                  setPath((p) => {
-                    const arr = p.profile[key].filter((_, j) => j !== i);
-                    return { ...p, profile: { ...p.profile, [key]: arr } };
-                  })
+                  setPath((p) => ({
+                    ...p,
+                    profile: {
+                      ...p.profile,
+                      [key]: [...(p.profile[key] || []), { k: "", v: "" }],
+                    },
+                  }))
                 }
               >
-                삭제
+                + 항목 추가
               </button>
-            </div>
+            </section>
           ))}
-          <button
-            className="a-add"
-            onClick={() =>
-              setPath((p) => ({
-                ...p,
-                profile: {
-                  ...p.profile,
-                  [key]: [...(p.profile[key] || []), { k: "", v: "" }],
-                },
-              }))
-            }
-          >
-            + 항목 추가
-          </button>
-        </section>
-      ))}
 
-      {/* Skill groups */}
-      <section className="a-section">
-        <h2>스킬</h2>
-        {(c.skillGroups || []).map((g, i) => (
-          <div className="a-card" key={i}>
-            <Field
-              label="카테고리명"
-              value={g.label}
-              onChange={(v) =>
-                setPath((p) => {
-                  const arr = [...p.skillGroups];
-                  arr[i] = { ...arr[i], label: v };
-                  return { ...p, skillGroups: arr };
-                })
-              }
-            />
-            <Field
-              label="스킬 목록 (한 줄에 하나씩)"
-              value={arrToLines(g.items)}
-              onChange={(v) =>
-                setPath((p) => {
-                  const arr = [...p.skillGroups];
-                  arr[i] = { ...arr[i], items: linesToArr(v) };
-                  return { ...p, skillGroups: arr };
-                })
-              }
-              textarea
-              rows={rowsFor(arrToLines(g.items))}
-            />
+        {/* Skill groups */}
+        {show("skills") && (
+          <section className="a-section">
+            <h2>스킬</h2>
+            {(c.skillGroups || []).map((g, i) => (
+              <div className="a-card" key={i}>
+                <Field
+                  label="카테고리명"
+                  value={g.label}
+                  onChange={(v) =>
+                    setPath((p) => {
+                      const arr = [...p.skillGroups];
+                      arr[i] = { ...arr[i], label: v };
+                      return { ...p, skillGroups: arr };
+                    })
+                  }
+                />
+                <Field
+                  label="스킬 목록 (한 줄에 하나씩)"
+                  value={arrToLines(g.items)}
+                  onChange={(v) =>
+                    setPath((p) => {
+                      const arr = [...p.skillGroups];
+                      arr[i] = { ...arr[i], items: linesToArr(v) };
+                      return { ...p, skillGroups: arr };
+                    })
+                  }
+                  textarea
+                  rows={rowsFor(arrToLines(g.items))}
+                />
+                <button
+                  className="a-del"
+                  onClick={() =>
+                    setPath((p) => ({
+                      ...p,
+                      skillGroups: p.skillGroups.filter((_, j) => j !== i),
+                    }))
+                  }
+                >
+                  이 카테고리 삭제
+                </button>
+              </div>
+            ))}
             <button
-              className="a-del"
+              className="a-add"
               onClick={() =>
                 setPath((p) => ({
                   ...p,
-                  skillGroups: p.skillGroups.filter((_, j) => j !== i),
+                  skillGroups: [...(p.skillGroups || []), { label: "", items: [] }],
                 }))
               }
             >
-              이 카테고리 삭제
+              + 스킬 카테고리 추가
             </button>
-          </div>
-        ))}
-        <button
-          className="a-add"
-          onClick={() =>
-            setPath((p) => ({
-              ...p,
-              skillGroups: [...(p.skillGroups || []), { label: "", items: [] }],
-            }))
-          }
-        >
-          + 스킬 카테고리 추가
-        </button>
-      </section>
+          </section>
+        )}
 
-      {/* Career */}
-      <section className="a-section">
-        <h2>경력</h2>
-        {(c.career || []).map((row, i) => (
-          <div className="a-card" key={i}>
-            <Field
-              label="기간"
-              value={row.period}
-              onChange={(v) =>
-                setPath((p) => {
-                  const arr = [...p.career];
-                  arr[i] = { ...arr[i], period: v };
-                  return { ...p, career: arr };
-                })
-              }
-            />
-            <Field
-              label="소속 · 직무"
-              value={row.org}
-              onChange={(v) =>
-                setPath((p) => {
-                  const arr = [...p.career];
-                  arr[i] = { ...arr[i], org: v };
-                  return { ...p, career: arr };
-                })
-              }
-            />
-            <Field
-              label="담당 업무 (한 줄에 하나씩)"
-              value={arrToLines(row.bullets)}
-              onChange={(v) =>
-                setPath((p) => {
-                  const arr = [...p.career];
-                  arr[i] = { ...arr[i], bullets: linesToArr(v) };
-                  return { ...p, career: arr };
-                })
-              }
-              textarea
-              rows={rowsFor(arrToLines(row.bullets))}
-            />
+        {/* Career */}
+        {show("career") && (
+          <section className="a-section">
+            <h2>경력</h2>
+            {(c.career || []).map((row, i) => (
+              <div className="a-card" key={i}>
+                <Field
+                  label="기간"
+                  value={row.period}
+                  onChange={(v) =>
+                    setPath((p) => {
+                      const arr = [...p.career];
+                      arr[i] = { ...arr[i], period: v };
+                      return { ...p, career: arr };
+                    })
+                  }
+                />
+                <Field
+                  label="소속 · 직무"
+                  value={row.org}
+                  onChange={(v) =>
+                    setPath((p) => {
+                      const arr = [...p.career];
+                      arr[i] = { ...arr[i], org: v };
+                      return { ...p, career: arr };
+                    })
+                  }
+                />
+                <Field
+                  label="담당 업무 (한 줄에 하나씩)"
+                  value={arrToLines(row.bullets)}
+                  onChange={(v) =>
+                    setPath((p) => {
+                      const arr = [...p.career];
+                      arr[i] = { ...arr[i], bullets: linesToArr(v) };
+                      return { ...p, career: arr };
+                    })
+                  }
+                  textarea
+                  rows={rowsFor(arrToLines(row.bullets))}
+                />
+                <button
+                  className="a-del"
+                  onClick={() =>
+                    setPath((p) => ({ ...p, career: p.career.filter((_, j) => j !== i) }))
+                  }
+                >
+                  이 경력 삭제
+                </button>
+              </div>
+            ))}
             <button
-              className="a-del"
-              onClick={() =>
-                setPath((p) => ({ ...p, career: p.career.filter((_, j) => j !== i) }))
-              }
-            >
-              이 경력 삭제
-            </button>
-          </div>
-        ))}
-        <button
-          className="a-add"
-          onClick={() =>
-            setPath((p) => ({
-              ...p,
-              career: [...(p.career || []), { period: "", org: "", bullets: [] }],
-            }))
-          }
-        >
-          + 경력 추가
-        </button>
-      </section>
-
-      {/* Projects */}
-      <section className="a-section">
-        <h2>프로젝트</h2>
-        {(c.projects || []).map((row, i) => (
-          <div className="a-card" key={i}>
-            <Field
-              label="기간"
-              value={row.period}
-              onChange={(v) =>
-                setPath((p) => {
-                  const arr = [...p.projects];
-                  arr[i] = { ...arr[i], period: v };
-                  return { ...p, projects: arr };
-                })
-              }
-            />
-            <Field
-              label="프로젝트명"
-              value={row.title}
-              onChange={(v) =>
-                setPath((p) => {
-                  const arr = [...p.projects];
-                  arr[i] = { ...arr[i], title: v };
-                  return { ...p, projects: arr };
-                })
-              }
-            />
-            <Field
-              label="내용 (한 줄에 하나씩)"
-              value={arrToLines(row.bullets)}
-              onChange={(v) =>
-                setPath((p) => {
-                  const arr = [...p.projects];
-                  arr[i] = { ...arr[i], bullets: linesToArr(v) };
-                  return { ...p, projects: arr };
-                })
-              }
-              textarea
-              rows={rowsFor(arrToLines(row.bullets))}
-            />
-            <button
-              className="a-del"
+              className="a-add"
               onClick={() =>
                 setPath((p) => ({
                   ...p,
-                  projects: p.projects.filter((_, j) => j !== i),
+                  career: [...(p.career || []), { period: "", org: "", bullets: [] }],
                 }))
               }
             >
-              이 프로젝트 삭제
+              + 경력 추가
             </button>
-          </div>
-        ))}
-        <button
-          className="a-add"
-          onClick={() =>
-            setPath((p) => ({
-              ...p,
-              projects: [...(p.projects || []), { period: "", title: "", bullets: [] }],
-            }))
-          }
-        >
-          + 프로젝트 추가
-        </button>
-      </section>
+          </section>
+        )}
 
-      {/* Videos */}
-      <section className="a-section">
-        <h2>영상</h2>
-        <p className="admin-note" style={{ marginBottom: 16 }}>
-          유튜브 링크를 넣으면 페이지에서 바로 재생돼요. 다른 링크는 클릭시
-          새 탭으로 열리는 카드로 표시돼요.
-        </p>
-        {(c.videos || []).map((row, i) => (
-          <div className="a-row" key={i}>
-            <input
-              value={row.title}
-              placeholder="제목"
-              onChange={(e) =>
-                setPath((p) => {
-                  const arr = [...p.videos];
-                  arr[i] = { ...arr[i], title: e.target.value };
-                  return { ...p, videos: arr };
-                })
-              }
-            />
-            <input
-              value={row.url}
-              placeholder="링크(URL)"
-              onChange={(e) =>
-                setPath((p) => {
-                  const arr = [...p.videos];
-                  arr[i] = { ...arr[i], url: e.target.value };
-                  return { ...p, videos: arr };
-                })
-              }
-            />
+        {/* Projects */}
+        {show("projects") && (
+          <section className="a-section">
+            <h2>프로젝트</h2>
+            {(c.projects || []).map((row, i) => (
+              <div className="a-card" key={i}>
+                <Field
+                  label="기간"
+                  value={row.period}
+                  onChange={(v) =>
+                    setPath((p) => {
+                      const arr = [...p.projects];
+                      arr[i] = { ...arr[i], period: v };
+                      return { ...p, projects: arr };
+                    })
+                  }
+                />
+                <Field
+                  label="프로젝트명"
+                  value={row.title}
+                  onChange={(v) =>
+                    setPath((p) => {
+                      const arr = [...p.projects];
+                      arr[i] = { ...arr[i], title: v };
+                      return { ...p, projects: arr };
+                    })
+                  }
+                />
+                <Field
+                  label="내용 (한 줄에 하나씩)"
+                  value={arrToLines(row.bullets)}
+                  onChange={(v) =>
+                    setPath((p) => {
+                      const arr = [...p.projects];
+                      arr[i] = { ...arr[i], bullets: linesToArr(v) };
+                      return { ...p, projects: arr };
+                    })
+                  }
+                  textarea
+                  rows={rowsFor(arrToLines(row.bullets))}
+                />
+                <button
+                  className="a-del"
+                  onClick={() =>
+                    setPath((p) => ({
+                      ...p,
+                      projects: p.projects.filter((_, j) => j !== i),
+                    }))
+                  }
+                >
+                  이 프로젝트 삭제
+                </button>
+              </div>
+            ))}
             <button
-              className="a-del"
-              onClick={() =>
-                setPath((p) => ({ ...p, videos: p.videos.filter((_, j) => j !== i) }))
-              }
-            >
-              삭제
-            </button>
-          </div>
-        ))}
-        <button
-          className="a-add"
-          onClick={() =>
-            setPath((p) => ({ ...p, videos: [...(p.videos || []), { title: "", url: "" }] }))
-          }
-        >
-          + 영상 추가
-        </button>
-      </section>
-
-      {/* Awards */}
-      <section className="a-section">
-        <h2>수상</h2>
-        {(c.awards || []).map((row, i) => (
-          <div className="a-row a-row3" key={i}>
-            <input
-              value={row.name}
-              placeholder="수상명"
-              onChange={(e) =>
-                setPath((p) => {
-                  const arr = [...p.awards];
-                  arr[i] = { ...arr[i], name: e.target.value };
-                  return { ...p, awards: arr };
-                })
-              }
-            />
-            <input
-              value={row.org}
-              placeholder="수여기관"
-              onChange={(e) =>
-                setPath((p) => {
-                  const arr = [...p.awards];
-                  arr[i] = { ...arr[i], org: e.target.value };
-                  return { ...p, awards: arr };
-                })
-              }
-            />
-            <input
-              value={row.year}
-              placeholder="연도"
-              onChange={(e) =>
-                setPath((p) => {
-                  const arr = [...p.awards];
-                  arr[i] = { ...arr[i], year: e.target.value };
-                  return { ...p, awards: arr };
-                })
-              }
-            />
-            <button
-              className="a-del"
-              onClick={() =>
-                setPath((p) => ({ ...p, awards: p.awards.filter((_, j) => j !== i) }))
-              }
-            >
-              삭제
-            </button>
-          </div>
-        ))}
-        <button
-          className="a-add"
-          onClick={() =>
-            setPath((p) => ({
-              ...p,
-              awards: [...(p.awards || []), { name: "", org: "", year: "" }],
-            }))
-          }
-        >
-          + 수상 추가
-        </button>
-      </section>
-
-      {/* Certifications */}
-      <section className="a-section">
-        <h2>자격증</h2>
-        {(c.certifications || []).map((row, i) => (
-          <div className="a-row a-row3" key={i}>
-            <input
-              value={row.name}
-              placeholder="자격명"
-              onChange={(e) =>
-                setPath((p) => {
-                  const arr = [...p.certifications];
-                  arr[i] = { ...arr[i], name: e.target.value };
-                  return { ...p, certifications: arr };
-                })
-              }
-            />
-            <input
-              value={row.org}
-              placeholder="발급기관"
-              onChange={(e) =>
-                setPath((p) => {
-                  const arr = [...p.certifications];
-                  arr[i] = { ...arr[i], org: e.target.value };
-                  return { ...p, certifications: arr };
-                })
-              }
-            />
-            <input
-              value={row.year}
-              placeholder="취득일"
-              onChange={(e) =>
-                setPath((p) => {
-                  const arr = [...p.certifications];
-                  arr[i] = { ...arr[i], year: e.target.value };
-                  return { ...p, certifications: arr };
-                })
-              }
-            />
-            <button
-              className="a-del"
+              className="a-add"
               onClick={() =>
                 setPath((p) => ({
                   ...p,
-                  certifications: p.certifications.filter((_, j) => j !== i),
+                  projects: [...(p.projects || []), { period: "", title: "", bullets: [] }],
                 }))
               }
             >
-              삭제
+              + 프로젝트 추가
             </button>
-          </div>
-        ))}
-        <button
-          className="a-add"
-          onClick={() =>
-            setPath((p) => ({
-              ...p,
-              certifications: [
-                ...(p.certifications || []),
-                { name: "", org: "", year: "" },
-              ],
-            }))
-          }
-        >
-          + 자격증 추가
-        </button>
-      </section>
+          </section>
+        )}
 
-      {/* Education */}
-      <section className="a-section">
-        <h2>학력</h2>
-        {(c.education || []).map((row, i) => (
-          <div className="a-row a-row3" key={i}>
-            <input
-              value={row.school}
-              placeholder="학교"
-              onChange={(e) =>
-                setPath((p) => {
-                  const arr = [...p.education];
-                  arr[i] = { ...arr[i], school: e.target.value };
-                  return { ...p, education: arr };
-                })
-              }
-            />
-            <input
-              value={row.major}
-              placeholder="전공"
-              onChange={(e) =>
-                setPath((p) => {
-                  const arr = [...p.education];
-                  arr[i] = { ...arr[i], major: e.target.value };
-                  return { ...p, education: arr };
-                })
-              }
-            />
-            <input
-              value={row.period}
-              placeholder="기간"
-              onChange={(e) =>
-                setPath((p) => {
-                  const arr = [...p.education];
-                  arr[i] = { ...arr[i], period: e.target.value };
-                  return { ...p, education: arr };
-                })
-              }
-            />
+        {/* Videos */}
+        {show("videos") && (
+          <section className="a-section">
+            <h2>영상</h2>
+            <p className="admin-note" style={{ marginBottom: 16 }}>
+              유튜브 링크를 넣으면 페이지에서 바로 재생돼요. 다른 링크는 클릭시
+              새 탭으로 열리는 카드로 표시돼요.
+            </p>
+            {(c.videos || []).map((row, i) => (
+              <div className="a-row" key={i}>
+                <input
+                  value={row.title}
+                  placeholder="제목"
+                  onChange={(e) =>
+                    setPath((p) => {
+                      const arr = [...p.videos];
+                      arr[i] = { ...arr[i], title: e.target.value };
+                      return { ...p, videos: arr };
+                    })
+                  }
+                />
+                <input
+                  value={row.url}
+                  placeholder="링크(URL)"
+                  onChange={(e) =>
+                    setPath((p) => {
+                      const arr = [...p.videos];
+                      arr[i] = { ...arr[i], url: e.target.value };
+                      return { ...p, videos: arr };
+                    })
+                  }
+                />
+                <button
+                  className="a-del"
+                  onClick={() =>
+                    setPath((p) => ({ ...p, videos: p.videos.filter((_, j) => j !== i) }))
+                  }
+                >
+                  삭제
+                </button>
+              </div>
+            ))}
             <button
-              className="a-del"
+              className="a-add"
+              onClick={() =>
+                setPath((p) => ({ ...p, videos: [...(p.videos || []), { title: "", url: "" }] }))
+              }
+            >
+              + 영상 추가
+            </button>
+          </section>
+        )}
+
+        {/* Awards */}
+        {show("awards") && (
+          <section className="a-section">
+            <h2>수상</h2>
+            {(c.awards || []).map((row, i) => (
+              <div className="a-row a-row3" key={i}>
+                <input
+                  value={row.name}
+                  placeholder="수상명"
+                  onChange={(e) =>
+                    setPath((p) => {
+                      const arr = [...p.awards];
+                      arr[i] = { ...arr[i], name: e.target.value };
+                      return { ...p, awards: arr };
+                    })
+                  }
+                />
+                <input
+                  value={row.org}
+                  placeholder="수여기관"
+                  onChange={(e) =>
+                    setPath((p) => {
+                      const arr = [...p.awards];
+                      arr[i] = { ...arr[i], org: e.target.value };
+                      return { ...p, awards: arr };
+                    })
+                  }
+                />
+                <input
+                  value={row.year}
+                  placeholder="연도"
+                  onChange={(e) =>
+                    setPath((p) => {
+                      const arr = [...p.awards];
+                      arr[i] = { ...arr[i], year: e.target.value };
+                      return { ...p, awards: arr };
+                    })
+                  }
+                />
+                <button
+                  className="a-del"
+                  onClick={() =>
+                    setPath((p) => ({ ...p, awards: p.awards.filter((_, j) => j !== i) }))
+                  }
+                >
+                  삭제
+                </button>
+              </div>
+            ))}
+            <button
+              className="a-add"
               onClick={() =>
                 setPath((p) => ({
                   ...p,
-                  education: p.education.filter((_, j) => j !== i),
+                  awards: [...(p.awards || []), { name: "", org: "", year: "" }],
                 }))
               }
             >
-              삭제
+              + 수상 추가
             </button>
-          </div>
-        ))}
-        <button
-          className="a-add"
-          onClick={() =>
-            setPath((p) => ({
-              ...p,
-              education: [...(p.education || []), { school: "", major: "", period: "" }],
-            }))
-          }
-        >
-          + 학력 추가
-        </button>
-      </section>
+          </section>
+        )}
 
-      {/* Contact */}
-      <section className="a-section">
-        <h2>연락처</h2>
-        <Field
-          label="이메일"
-          value={c.contact?.email}
-          onChange={(v) => setPath((p) => ({ ...p, contact: { ...p.contact, email: v } }))}
-        />
-        <Field
-          label="전화번호"
-          value={c.contact?.phone}
-          onChange={(v) => setPath((p) => ({ ...p, contact: { ...p.contact, phone: v } }))}
-        />
-        <Field
-          label="포트폴리오 링크"
-          value={c.contact?.portfolioUrl}
-          onChange={(v) =>
-            setPath((p) => ({ ...p, contact: { ...p.contact, portfolioUrl: v } }))
-          }
-        />
-      </section>
-
-      {/* Dev projects */}
-      <section className="a-section">
-        <h2>사이드 프로젝트 (개발)</h2>
-        {(c.devProjects || []).map((row, i) => (
-          <div className="a-card" key={i}>
-            <Field
-              label="제목"
-              value={row.title}
-              onChange={(v) =>
-                setPath((p) => {
-                  const arr = [...p.devProjects];
-                  arr[i] = { ...arr[i], title: v };
-                  return { ...p, devProjects: arr };
-                })
-              }
-            />
-            <Field
-              label="설명"
-              value={row.desc}
-              onChange={(v) =>
-                setPath((p) => {
-                  const arr = [...p.devProjects];
-                  arr[i] = { ...arr[i], desc: v };
-                  return { ...p, devProjects: arr };
-                })
-              }
-              textarea
-              rows={4}
-            />
-            <Field
-              label="기술 태그 (한 줄에 하나씩)"
-              value={arrToLines(row.tags)}
-              onChange={(v) =>
-                setPath((p) => {
-                  const arr = [...p.devProjects];
-                  arr[i] = { ...arr[i], tags: linesToArr(v) };
-                  return { ...p, devProjects: arr };
-                })
-              }
-              textarea
-              rows={rowsFor(arrToLines(row.tags), 3)}
-            />
+        {/* Certifications */}
+        {show("certifications") && (
+          <section className="a-section">
+            <h2>자격증</h2>
+            {(c.certifications || []).map((row, i) => (
+              <div className="a-row a-row3" key={i}>
+                <input
+                  value={row.name}
+                  placeholder="자격명"
+                  onChange={(e) =>
+                    setPath((p) => {
+                      const arr = [...p.certifications];
+                      arr[i] = { ...arr[i], name: e.target.value };
+                      return { ...p, certifications: arr };
+                    })
+                  }
+                />
+                <input
+                  value={row.org}
+                  placeholder="발급기관"
+                  onChange={(e) =>
+                    setPath((p) => {
+                      const arr = [...p.certifications];
+                      arr[i] = { ...arr[i], org: e.target.value };
+                      return { ...p, certifications: arr };
+                    })
+                  }
+                />
+                <input
+                  value={row.year}
+                  placeholder="취득일"
+                  onChange={(e) =>
+                    setPath((p) => {
+                      const arr = [...p.certifications];
+                      arr[i] = { ...arr[i], year: e.target.value };
+                      return { ...p, certifications: arr };
+                    })
+                  }
+                />
+                <button
+                  className="a-del"
+                  onClick={() =>
+                    setPath((p) => ({
+                      ...p,
+                      certifications: p.certifications.filter((_, j) => j !== i),
+                    }))
+                  }
+                >
+                  삭제
+                </button>
+              </div>
+            ))}
             <button
-              className="a-del"
+              className="a-add"
               onClick={() =>
                 setPath((p) => ({
                   ...p,
-                  devProjects: p.devProjects.filter((_, j) => j !== i),
+                  certifications: [
+                    ...(p.certifications || []),
+                    { name: "", org: "", year: "" },
+                  ],
                 }))
               }
             >
-              삭제
+              + 자격증 추가
             </button>
-          </div>
-        ))}
-        <button
-          className="a-add"
-          onClick={() =>
-            setPath((p) => ({
-              ...p,
-              devProjects: [...(p.devProjects || []), { title: "", desc: "", tags: [] }],
-            }))
-          }
-        >
-          + 사이드 프로젝트 추가
-        </button>
-      </section>
+          </section>
+        )}
 
-      {/* Save */}
-      <section className="a-section a-save">
-        <h2>저장</h2>
+        {/* Education */}
+        {show("education") && (
+          <section className="a-section">
+            <h2>학력</h2>
+            {(c.education || []).map((row, i) => (
+              <div className="a-row a-row3" key={i}>
+                <input
+                  value={row.school}
+                  placeholder="학교"
+                  onChange={(e) =>
+                    setPath((p) => {
+                      const arr = [...p.education];
+                      arr[i] = { ...arr[i], school: e.target.value };
+                      return { ...p, education: arr };
+                    })
+                  }
+                />
+                <input
+                  value={row.major}
+                  placeholder="전공"
+                  onChange={(e) =>
+                    setPath((p) => {
+                      const arr = [...p.education];
+                      arr[i] = { ...arr[i], major: e.target.value };
+                      return { ...p, education: arr };
+                    })
+                  }
+                />
+                <input
+                  value={row.period}
+                  placeholder="기간"
+                  onChange={(e) =>
+                    setPath((p) => {
+                      const arr = [...p.education];
+                      arr[i] = { ...arr[i], period: e.target.value };
+                      return { ...p, education: arr };
+                    })
+                  }
+                />
+                <button
+                  className="a-del"
+                  onClick={() =>
+                    setPath((p) => ({
+                      ...p,
+                      education: p.education.filter((_, j) => j !== i),
+                    }))
+                  }
+                >
+                  삭제
+                </button>
+              </div>
+            ))}
+            <button
+              className="a-add"
+              onClick={() =>
+                setPath((p) => ({
+                  ...p,
+                  education: [...(p.education || []), { school: "", major: "", period: "" }],
+                }))
+              }
+            >
+              + 학력 추가
+            </button>
+          </section>
+        )}
+
+        {/* Cover letter */}
+        {show("coverLetter") && (
+          <section className="a-section">
+            <h2>자기소개서</h2>
+            {(c.coverLetter || []).map((row, i) => (
+              <div className="a-card" key={i}>
+                <Field
+                  label="제목"
+                  value={row.label}
+                  onChange={(v) =>
+                    setPath((p) => {
+                      const arr = [...p.coverLetter];
+                      arr[i] = { ...arr[i], label: v };
+                      return { ...p, coverLetter: arr };
+                    })
+                  }
+                />
+                <Field
+                  label="부제"
+                  value={row.subtitle}
+                  onChange={(v) =>
+                    setPath((p) => {
+                      const arr = [...p.coverLetter];
+                      arr[i] = { ...arr[i], subtitle: v };
+                      return { ...p, coverLetter: arr };
+                    })
+                  }
+                />
+                <Field
+                  label="본문"
+                  value={row.body}
+                  onChange={(v) =>
+                    setPath((p) => {
+                      const arr = [...p.coverLetter];
+                      arr[i] = { ...arr[i], body: v };
+                      return { ...p, coverLetter: arr };
+                    })
+                  }
+                  textarea
+                  rows={Math.max(8, rowsFor(row.body || ""))}
+                />
+                <button
+                  className="a-del"
+                  onClick={() =>
+                    setPath((p) => ({
+                      ...p,
+                      coverLetter: p.coverLetter.filter((_, j) => j !== i),
+                    }))
+                  }
+                >
+                  이 항목 삭제
+                </button>
+              </div>
+            ))}
+            <button
+              className="a-add"
+              onClick={() =>
+                setPath((p) => ({
+                  ...p,
+                  coverLetter: [
+                    ...(p.coverLetter || []),
+                    { label: "", subtitle: "", body: "" },
+                  ],
+                }))
+              }
+            >
+              + 자기소개서 항목 추가
+            </button>
+          </section>
+        )}
+
+        {/* Contact */}
+        {show("contact") && (
+          <section className="a-section">
+            <h2>연락처</h2>
+            <Field
+              label="이메일"
+              value={c.contact?.email}
+              onChange={(v) => setPath((p) => ({ ...p, contact: { ...p.contact, email: v } }))}
+            />
+            <Field
+              label="전화번호"
+              value={c.contact?.phone}
+              onChange={(v) => setPath((p) => ({ ...p, contact: { ...p.contact, phone: v } }))}
+            />
+            <Field
+              label="포트폴리오 링크"
+              value={c.contact?.portfolioUrl}
+              onChange={(v) =>
+                setPath((p) => ({ ...p, contact: { ...p.contact, portfolioUrl: v } }))
+              }
+            />
+          </section>
+        )}
+
+        {/* Dev projects */}
+        {show("devProjects") && (
+          <section className="a-section">
+            <h2>사이드 프로젝트 (개발)</h2>
+            {(c.devProjects || []).map((row, i) => (
+              <div className="a-card" key={i}>
+                <Field
+                  label="제목"
+                  value={row.title}
+                  onChange={(v) =>
+                    setPath((p) => {
+                      const arr = [...p.devProjects];
+                      arr[i] = { ...arr[i], title: v };
+                      return { ...p, devProjects: arr };
+                    })
+                  }
+                />
+                <Field
+                  label="설명"
+                  value={row.desc}
+                  onChange={(v) =>
+                    setPath((p) => {
+                      const arr = [...p.devProjects];
+                      arr[i] = { ...arr[i], desc: v };
+                      return { ...p, devProjects: arr };
+                    })
+                  }
+                  textarea
+                  rows={4}
+                />
+                <Field
+                  label="기술 태그 (한 줄에 하나씩)"
+                  value={arrToLines(row.tags)}
+                  onChange={(v) =>
+                    setPath((p) => {
+                      const arr = [...p.devProjects];
+                      arr[i] = { ...arr[i], tags: linesToArr(v) };
+                      return { ...p, devProjects: arr };
+                    })
+                  }
+                  textarea
+                  rows={rowsFor(arrToLines(row.tags), 3)}
+                />
+                <button
+                  className="a-del"
+                  onClick={() =>
+                    setPath((p) => ({
+                      ...p,
+                      devProjects: p.devProjects.filter((_, j) => j !== i),
+                    }))
+                  }
+                >
+                  삭제
+                </button>
+              </div>
+            ))}
+            <button
+              className="a-add"
+              onClick={() =>
+                setPath((p) => ({
+                  ...p,
+                  devProjects: [...(p.devProjects || []), { title: "", desc: "", tags: [] }],
+                }))
+              }
+            >
+              + 사이드 프로젝트 추가
+            </button>
+          </section>
+        )}
+      </div>
+
+      {/* Save — always visible regardless of tab */}
+      <div className="a-save-bar">
         <button className="a-save-btn" onClick={handleSave}>
           저장하기
         </button>
         {status && <p className="a-status">{status}</p>}
-      </section>
+      </div>
     </div>
   );
 }
