@@ -150,7 +150,7 @@ export default async function Home() {
                         {slug && (
                           <img
                             className="skill-icon"
-                            src={`https://cdn.simpleicons.org/${slug}`}
+                            src={`https://cdnjs.cloudflare.com/ajax/libs/simple-icons/12.1.0/${slug}.svg`}
                             alt=""
                           />
                         )}
