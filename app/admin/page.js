@@ -43,15 +43,40 @@ function rowsFor(value, min = 4) {
   return Math.max(min, lines + 1);
 }
 
+const PRESET_ROLES = ["기획", "연출", "촬영", "편집", "출연", "조명", "음향"];
+
 function ContributionEditor({ items, onChange }) {
   const list = items || [];
+  const activeRoles = new Set(list.map((c) => c.role));
+
+  function togglePreset(role) {
+    if (activeRoles.has(role)) {
+      onChange(list.filter((c) => c.role !== role));
+    } else {
+      onChange([...list, { role, percent: 100 }]);
+    }
+  }
+
   return (
     <div className="a-contrib">
       <span className="a-contrib-label">기여도 (역할별, 선택)</span>
+      <div className="a-preset-row">
+        {PRESET_ROLES.map((role) => (
+          <button
+            type="button"
+            key={role}
+            className={"a-preset" + (activeRoles.has(role) ? " active" : "")}
+            onClick={() => togglePreset(role)}
+          >
+            {activeRoles.has(role) ? "− " : "+ "}
+            {role}
+          </button>
+        ))}
+      </div>
       {list.map((c, i) => (
         <div className="a-row a-row-contrib" key={i}>
           <input
-            placeholder="역할 (예: 기획)"
+            placeholder="역할 (직접 입력도 가능)"
             value={c.role}
             onChange={(e) => {
               const arr = [...list];
@@ -83,7 +108,7 @@ function ContributionEditor({ items, onChange }) {
         type="button"
         onClick={() => onChange([...list, { role: "", percent: 100 }])}
       >
-        + 역할 추가
+        + 다른 역할 직접 추가
       </button>
     </div>
   );

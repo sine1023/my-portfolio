@@ -990,6 +990,34 @@ footer {
   cursor: not-allowed;
 }
 
+.a-preset-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.a-preset {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 6px 12px;
+  font-size: 12px;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.a-preset:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.a-preset.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
 .a-contrib {
   border-top: 1px dashed var(--line);
   padding-top: 12px;
