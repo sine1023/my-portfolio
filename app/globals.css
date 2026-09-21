@@ -1,31 +1,35 @@
 /* ============================================
-   Design tokens
-   Color   #14120F(base) #1B1815(surface) #F2EFE9(ink)
-           #E8A33D(accent-film) #8C8577(muted)
-           #0F1620(surface-dev) #4FD1C5(accent-dev)
-   Type    display: Bebas Neue (poster/title-card)
+   Design tokens — "production dossier" direction
+   Color   #F0F1EE(paper) #FFFFFF(card) #191B1D(ink)
+           #6B6E68(muted) #D8D6CE(line) #C4372E(accent, tally-light red)
+           #FBEAE8(accent-soft)
+           dev surface: #14181C / #22303F(line) / #4FD1C5(accent-dev)
+   Type    head: Nanum Myeongjo (editorial serif, authority)
            body: IBM Plex Sans KR
-   Layout  left-aligned editorial column, max 880px
+           meta: IBM Plex Mono (dates/tags — call-sheet convention)
+   Layout  single column, left-aligned, measure ~760px, generous rhythm
    ============================================ */
 
 :root {
-  --base: #14120f;
-  --surface: #1b1815;
-  --ink: #f2efe9;
-  --muted: #8c8577;
-  --line: #322d27;
-  --accent-film: #e8a33d;
+  --paper: #f0f1ee;
+  --card: #ffffff;
+  --ink: #191b1d;
+  --muted: #6b6e68;
+  --line: #d8d6ce;
+  --accent: #c4372e;
+  --accent-soft: #fbeae8;
 
-  --surface-dev: #0f1620;
-  --line-dev: #22303f;
+  --surface-dev: #14181c;
+  --line-dev: #263340;
   --accent-dev: #4fd1c5;
   --ink-dev: #e7edf1;
-  --muted-dev: #7488a0;
+  --muted-dev: #7a8a97;
 
-  --font-display: "Bebas Neue", sans-serif;
+  --font-display: "Nanum Myeongjo", serif;
   --font-body: "IBM Plex Sans KR", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 
-  --measure: 880px;
+  --measure: 760px;
 }
 
 * {
@@ -39,11 +43,11 @@ body {
 }
 
 body {
-  background: var(--base);
+  background: var(--paper);
   color: var(--ink);
   font-family: var(--font-body);
   font-weight: 300;
-  line-height: 1.6;
+  line-height: 1.7;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -52,8 +56,8 @@ a {
 }
 
 ::selection {
-  background: var(--accent-film);
-  color: var(--base);
+  background: var(--accent);
+  color: #fff;
 }
 
 .wrap {
@@ -65,168 +69,304 @@ a {
 /* ---------- Hero ---------- */
 
 .hero {
-  padding: 128px 0 96px;
+  padding: 96px 0 56px;
 }
 
 .hero-role {
-  color: var(--accent-film);
-  font-size: 15px;
-  letter-spacing: 0.02em;
-  margin: 0 0 18px;
+  font-family: var(--font-mono);
+  color: var(--accent);
+  font-size: 13px;
+  margin: 0 0 16px;
 }
 
 .hero-name {
   font-family: var(--font-display);
-  font-size: clamp(64px, 13vw, 148px);
-  line-height: 0.92;
+  font-weight: 800;
+  font-size: clamp(40px, 7vw, 60px);
+  line-height: 1.15;
   margin: 0;
-  letter-spacing: 0.01em;
 }
 
 .hero-tag {
-  max-width: 46ch;
+  max-width: 52ch;
   color: var(--muted);
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 300;
-  margin: 28px 0 0;
+  margin: 20px 0 0;
 }
 
 /* ---------- Section heading ---------- */
 
+section {
+  padding: 52px 0;
+  border-top: 1px solid var(--line);
+}
+
+section:first-of-type {
+  border-top: none;
+}
+
 .section-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 24px;
-  border-bottom: 1px solid var(--line);
-  padding-bottom: 18px;
-  margin-bottom: 8px;
+  margin-bottom: 28px;
 }
 
 .section-head h2 {
   font-family: var(--font-display);
-  font-weight: 400;
-  font-size: 36px;
-  letter-spacing: 0.01em;
+  font-weight: 700;
+  font-size: 24px;
   margin: 0;
 }
 
-.section-head .count {
+.section-head .eng {
+  font-family: var(--font-mono);
   color: var(--muted);
-  font-size: 14px;
-  white-space: nowrap;
+  font-size: 12px;
+  margin: 6px 0 0;
 }
 
-section {
-  padding: 72px 0;
-}
-
-/* ---------- Works list (filmography style) ---------- */
-
-.works-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.work-row {
-  display: grid;
-  grid-template-columns: 84px 1fr auto;
-  align-items: baseline;
-  gap: 20px;
-  padding: 26px 0;
-  border-bottom: 1px solid var(--line);
-  transition: opacity 0.2s ease;
-}
-
-.work-row .year {
-  font-family: var(--font-display);
-  color: var(--muted);
-  font-size: 22px;
-}
-
-.work-row .title {
-  font-size: 21px;
-  font-weight: 500;
-}
-
-.work-row .title .placeholder {
-  color: var(--muted);
-  font-weight: 300;
-}
-
-.work-row .role {
-  color: var(--muted);
-  font-size: 14px;
-  text-align: right;
-}
-
-.works-note {
-  margin-top: 22px;
+.section-note {
+  margin-top: 18px;
   color: var(--muted);
   font-size: 13px;
 }
 
-/* ---------- About ---------- */
+/* ---------- Profile card ---------- */
 
-.about {
+.profile-grid {
   display: grid;
-  grid-template-columns: 220px 1fr;
-  gap: 48px;
-  align-items: start;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
 }
 
-.about-portrait {
-  width: 100%;
-  aspect-ratio: 3 / 4;
-  background: var(--surface);
+.profile-cell {
+  background: var(--card);
+  padding: 20px;
+}
+
+.profile-cell h3 {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--accent);
+  margin: 0 0 12px;
+}
+
+.profile-cell ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 14px;
+}
+
+.profile-cell li {
+  padding: 5px 0;
+  color: var(--ink);
+}
+
+.profile-cell li .k {
+  color: var(--muted);
+  margin-right: 8px;
+}
+
+.intro-text p {
+  max-width: 60ch;
+  font-size: 15px;
+  margin: 0 0 14px;
+}
+
+/* ---------- Skills ---------- */
+
+.skill-group {
+  margin-bottom: 22px;
+}
+
+.skill-group h4 {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  margin: 0 0 10px;
+}
+
+.skill-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.skill-tags span {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 6px 12px;
+  font-size: 13px;
+}
+
+/* ---------- Career timeline ---------- */
+
+.timeline {
+  border-left: 1px solid var(--line);
+}
+
+.timeline-row {
+  position: relative;
+  padding: 0 0 30px 24px;
+}
+
+.timeline-row::before {
+  content: "";
+  position: absolute;
+  left: -5px;
+  top: 4px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.timeline-row .period {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.timeline-row .org {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.timeline-row ul {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.timeline-row li {
+  margin-bottom: 4px;
+}
+
+/* ---------- Projects ---------- */
+
+.project-entry {
+  padding: 24px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.project-entry:last-child {
+  border-bottom: none;
+}
+
+.project-entry .period {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.project-entry h3 {
+  font-size: 17px;
+  font-weight: 500;
+  margin: 6px 0 10px;
+}
+
+.project-entry ul {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.project-entry li {
+  margin-bottom: 5px;
+}
+
+/* ---------- Videos ---------- */
+
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.video-slot {
+  aspect-ratio: 16 / 9;
+  background: var(--card);
   border: 1px solid var(--line);
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--muted);
   font-size: 13px;
-  text-align: center;
-  padding: 12px;
+  font-family: var(--font-mono);
 }
 
-.about-body p {
-  max-width: 60ch;
-  font-size: 16px;
-  color: var(--ink);
-  margin: 0 0 16px;
+/* ---------- Tables (Awards / Education) ---------- */
+
+table.doc-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
 }
 
-.about-body p.muted {
+table.doc-table th {
+  text-align: left;
+  font-family: var(--font-mono);
+  font-weight: 500;
   color: var(--muted);
+  font-size: 12px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--ink);
 }
 
-/* ---------- Dev section (distinct surface) ---------- */
+table.doc-table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+/* ---------- Contact ---------- */
+
+.contact-row {
+  display: flex;
+  gap: 28px;
+  flex-wrap: wrap;
+  font-size: 15px;
+}
+
+.contact-row a {
+  text-decoration: none;
+  border-bottom: 1px solid var(--line);
+}
+
+.contact-row a:hover {
+  border-bottom-color: var(--accent);
+}
+
+/* ---------- Dev section (distinct surface, kept from prior version) ---------- */
 
 .dev-section {
   background: var(--surface-dev);
   color: var(--ink-dev);
-  padding: 88px 0;
+  padding: 72px 0;
   margin-top: 40px;
-}
-
-.dev-section .section-head {
-  border-bottom-color: var(--line-dev);
 }
 
 .dev-section .section-head h2 {
   color: var(--ink-dev);
 }
 
-.dev-section .section-head .count {
+.dev-section .section-head .eng {
   color: var(--muted-dev);
 }
 
 .dev-intro {
-  max-width: 62ch;
+  max-width: 60ch;
   color: var(--muted-dev);
-  font-size: 15px;
-  margin: 24px 0 44px;
+  font-size: 14px;
+  margin: -10px 0 36px;
 }
 
 .dev-grid {
@@ -239,19 +379,19 @@ section {
 
 .dev-card {
   background: var(--surface-dev);
-  padding: 28px;
+  padding: 26px;
 }
 
 .dev-card h3 {
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 600;
   margin: 0 0 10px;
 }
 
 .dev-card p {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--muted-dev);
-  margin: 0 0 16px;
+  margin: 0 0 14px;
   line-height: 1.65;
 }
 
@@ -262,7 +402,7 @@ section {
 }
 
 .tech-tags span {
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-family: var(--font-mono);
   font-size: 11px;
   color: var(--accent-dev);
   border: 1px solid var(--line-dev);
@@ -273,62 +413,32 @@ section {
 /* ---------- Footer ---------- */
 
 footer {
-  padding: 56px 0 80px;
+  padding: 48px 0 72px;
   color: var(--muted);
-  font-size: 14px;
+  font-size: 13px;
   display: flex;
   justify-content: space-between;
-  align-items: center;
   flex-wrap: wrap;
   gap: 12px;
 }
 
-footer a {
-  color: var(--ink);
-  text-decoration: none;
-  border-bottom: 1px solid var(--line);
-}
-
-footer a:hover {
-  border-bottom-color: var(--accent-film);
-}
-
 /* ---------- Responsive ---------- */
 
-@media (max-width: 720px) {
-  .hero {
-    padding: 88px 0 64px;
-  }
-
-  .work-row {
-    grid-template-columns: 56px 1fr;
-  }
-
-  .work-row .role {
-    grid-column: 2 / 3;
-    text-align: left;
-    margin-top: 4px;
-  }
-
-  .about {
+@media (max-width: 640px) {
+  .profile-grid {
     grid-template-columns: 1fr;
   }
-
-  .about-portrait {
-    max-width: 200px;
+  .video-grid {
+    grid-template-columns: 1fr;
   }
-
   .dev-grid {
     grid-template-columns: 1fr;
   }
-
-  footer {
-    flex-direction: column;
-    align-items: flex-start;
+  table.doc-table {
+    font-size: 12.5px;
   }
 }
 
-/* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
   * {
     transition: none !important;
