@@ -163,6 +163,7 @@ export default async function Home() {
     devProjects,
     coverLetter,
     volunteer,
+    volunteerSummary,
   } = content;
 
   const navItems = [
@@ -437,6 +438,19 @@ export default async function Home() {
         {volunteer?.length > 0 && (
           <section id="volunteer">
             <SectionHead ko="자원봉사" en="Volunteer" />
+            {volunteerSummary && (
+              <div className="stat-strip">
+                {volunteerSummary.period && (
+                  <span>{volunteerSummary.period}</span>
+                )}
+                {volunteerSummary.hours && (
+                  <span>{volunteerSummary.hours}</span>
+                )}
+                {volunteerSummary.count && (
+                  <span>{volunteerSummary.count}</span>
+                )}
+              </div>
+            )}
             {sortedVolunteer.map((v, i) => (
               <div className="project-entry" key={i}>
                 <div className="period">{v.period}</div>

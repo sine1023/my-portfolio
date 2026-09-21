@@ -823,6 +823,42 @@ export default function AdminPage() {
         {show("volunteer") && (
           <section className="a-section">
             <h2>자원봉사</h2>
+            <div className="a-card">
+              <p className="admin-note" style={{ marginBottom: 12 }}>
+                누적 통계 (전체 활동 기간·시간·횟수) — 자원봉사 포털 확인서 등의
+                총계를 넣으면 상단에 배지로 표시돼요. 비워두면 표시 안 됨.
+              </p>
+              <Field
+                label="활동 기간 (예: 2012.02 — 2024.09)"
+                value={c.volunteerSummary?.period}
+                onChange={(v) =>
+                  setPath((p) => ({
+                    ...p,
+                    volunteerSummary: { ...p.volunteerSummary, period: v },
+                  }))
+                }
+              />
+              <Field
+                label="누적 시간 (예: 누적 1,273시간 27분)"
+                value={c.volunteerSummary?.hours}
+                onChange={(v) =>
+                  setPath((p) => ({
+                    ...p,
+                    volunteerSummary: { ...p.volunteerSummary, hours: v },
+                  }))
+                }
+              />
+              <Field
+                label="참여 횟수 (예: 총 249회 참여)"
+                value={c.volunteerSummary?.count}
+                onChange={(v) =>
+                  setPath((p) => ({
+                    ...p,
+                    volunteerSummary: { ...p.volunteerSummary, count: v },
+                  }))
+                }
+              />
+            </div>
             {(c.volunteer || []).map((row, i) => (
               <div className="a-card" key={i}>
                 <Field

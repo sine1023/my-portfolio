@@ -468,6 +468,24 @@ table.doc-table td {
   margin: 0;
 }
 
+/* ---------- Stat strip (volunteer summary etc.) ---------- */
+
+.stat-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+
+.stat-strip span {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-radius: 3px;
+  padding: 6px 12px;
+}
+
 /* ---------- Contact ---------- */
 
 .contact-row {
