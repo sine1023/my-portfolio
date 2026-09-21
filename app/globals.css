@@ -799,6 +799,31 @@ footer {
   margin: 0 auto;
 }
 
+.a-period-picker {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 12px;
+  align-items: end;
+  margin-bottom: 6px;
+}
+
+.a-ongoing {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--muted);
+  padding-bottom: 9px;
+  white-space: nowrap;
+}
+
+.a-period-preview {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent);
+  margin: 0 0 14px;
+}
+
 .a-contrib {
   border-top: 1px dashed var(--line);
   padding-top: 12px;

@@ -89,6 +89,72 @@ function ContributionEditor({ items, onChange }) {
   );
 }
 
+function formatPeriod(startMonth, endMonth, ongoing) {
+  if (!startMonth) return "";
+  const [sy, sm] = startMonth.split("-").map(Number);
+  const startText = `${sy}.${String(sm).padStart(2, "0")}`;
+
+  if (ongoing) {
+    return `${startText} — 진행중`;
+  }
+  if (!endMonth) return startText;
+
+  const [ey, em] = endMonth.split("-").map(Number);
+  const endText = `${ey}.${String(em).padStart(2, "0")}`;
+  const months = (ey - sy) * 12 + (em - sm) + 1;
+  let durText = "";
+  if (months > 0) {
+    if (months >= 12) {
+      const y = Math.floor(months / 12);
+      const m = months % 12;
+      durText = m > 0 ? `${y}년 ${m}개월` : `${y}년`;
+    } else {
+      durText = `${months}개월`;
+    }
+  }
+  return durText
+    ? `${startText} — ${endText} (${durText})`
+    : `${startText} — ${endText}`;
+}
+
+function PeriodPicker({ startMonth, endMonth, ongoing, onChange }) {
+  return (
+    <div className="a-period-picker">
+      <label className="a-field">
+        <span>시작월</span>
+        <input
+          type="month"
+          value={startMonth || ""}
+          onChange={(e) =>
+            onChange({ startMonth: e.target.value, endMonth, ongoing })
+          }
+        />
+      </label>
+      <label className="a-field">
+        <span>종료월</span>
+        <input
+          type="month"
+          value={endMonth || ""}
+          disabled={ongoing}
+          onChange={(e) =>
+            onChange({ startMonth, endMonth: e.target.value, ongoing })
+          }
+        />
+      </label>
+      <label className="a-ongoing">
+        <input
+          type="checkbox"
+          checked={!!ongoing}
+          onChange={(e) =>
+            onChange({ startMonth, endMonth, ongoing: e.target.checked })
+          }
+        />
+        진행중
+      </label>
+    </div>
+  );
+}
+
 function LoginGate({ onUnlock }) {
   const [pw, setPw] = useState("");
   const [checking, setChecking] = useState(false);
@@ -411,17 +477,27 @@ export default function AdminPage() {
             <h2>경력</h2>
             {(c.career || []).map((row, i) => (
               <div className="a-card" key={i}>
-                <Field
-                  label="기간"
-                  value={row.period}
-                  onChange={(v) =>
+                <PeriodPicker
+                  startMonth={row.startMonth}
+                  endMonth={row.endMonth}
+                  ongoing={row.ongoing}
+                  onChange={({ startMonth, endMonth, ongoing }) =>
                     setPath((p) => {
                       const arr = [...p.career];
-                      arr[i] = { ...arr[i], period: v };
+                      arr[i] = {
+                        ...arr[i],
+                        startMonth,
+                        endMonth,
+                        ongoing,
+                        period: formatPeriod(startMonth, endMonth, ongoing),
+                      };
                       return { ...p, career: arr };
                     })
                   }
                 />
+                <p className="a-period-preview">
+                  표시될 기간: {row.period || "—"}
+                </p>
                 <Field
                   label="소속 · 직무"
                   value={row.org}
@@ -471,7 +547,17 @@ export default function AdminPage() {
               onClick={() =>
                 setPath((p) => ({
                   ...p,
-                  career: [...(p.career || []), { period: "", org: "", bullets: [] }],
+                  career: [
+                    ...(p.career || []),
+                    {
+                      period: "",
+                      org: "",
+                      bullets: [],
+                      startMonth: "",
+                      endMonth: "",
+                      ongoing: false,
+                    },
+                  ],
                 }))
               }
             >
