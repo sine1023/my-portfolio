@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabaseClient";
 import defaultContent from "../../lib/defaultContent";
 
-function Field({ label, value, onChange, textarea, placeholder, type }) {
+function Field({ label, value, onChange, textarea, placeholder, type, rows }) {
   return (
     <label className="a-field">
       <span>{label}</span>
@@ -13,7 +13,7 @@ function Field({ label, value, onChange, textarea, placeholder, type }) {
           value={value ?? ""}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
-          rows={3}
+          rows={rows || 6}
         />
       ) : (
         <input
@@ -36,6 +36,11 @@ function linesToArr(text) {
 
 function arrToLines(arr) {
   return (arr || []).join("\n");
+}
+
+function rowsFor(value, min = 4) {
+  const lines = (value || "").split("\n").length;
+  return Math.max(min, lines + 1);
 }
 
 function LoginGate({ onUnlock }) {
@@ -65,6 +70,9 @@ function LoginGate({ onUnlock }) {
 
   return (
     <div className="admin-wrap admin-gate">
+      <a href="/" className="a-back">
+        ← 홈으로
+      </a>
       <h1>관리자 로그인</h1>
       <form onSubmit={handleSubmit}>
         <Field
@@ -146,6 +154,9 @@ export default function AdminPage() {
 
   return (
     <div className="admin-wrap">
+      <a href="/" className="a-back">
+        ← 홈으로
+      </a>
       <h1>관리자 페이지</h1>
       <p className="admin-note">
         내용을 수정한 뒤 맨 아래에서 비밀번호를 입력하고 저장하세요. 저장하면
@@ -181,6 +192,7 @@ export default function AdminPage() {
           value={c.intro}
           onChange={(v) => setPath((p) => ({ ...p, intro: v }))}
           textarea
+          rows={10}
         />
       </section>
 
@@ -272,6 +284,7 @@ export default function AdminPage() {
                 })
               }
               textarea
+              rows={rowsFor(arrToLines(g.items))}
             />
             <button
               className="a-del"
@@ -337,6 +350,7 @@ export default function AdminPage() {
                 })
               }
               textarea
+              rows={rowsFor(arrToLines(row.bullets))}
             />
             <button
               className="a-del"
@@ -399,6 +413,7 @@ export default function AdminPage() {
                 })
               }
               textarea
+              rows={rowsFor(arrToLines(row.bullets))}
             />
             <button
               className="a-del"
@@ -651,6 +666,7 @@ export default function AdminPage() {
                 })
               }
               textarea
+              rows={4}
             />
             <Field
               label="기술 태그 (한 줄에 하나씩)"
@@ -663,6 +679,7 @@ export default function AdminPage() {
                 })
               }
               textarea
+              rows={rowsFor(arrToLines(row.tags), 3)}
             />
             <button
               className="a-del"

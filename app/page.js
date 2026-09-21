@@ -87,6 +87,9 @@ export default async function Home() {
 
   return (
     <main>
+      <a href="/admin" className="top-admin-link">
+        로그인
+      </a>
       <div className="wrap">
         <section className="hero" style={{ borderTop: "none" }}>
           <p className="hero-role">{hero?.role}</p>
