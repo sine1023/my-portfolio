@@ -543,6 +543,17 @@ table.doc-table td {
   margin: 0 0 10px;
 }
 
+.dev-card h3 a {
+  color: var(--ink-dev);
+  text-decoration: none;
+  border-bottom: 1px solid var(--line-dev);
+}
+
+.dev-card h3 a:hover {
+  color: var(--accent-dev);
+  border-bottom-color: var(--accent-dev);
+}
+
 .dev-card p {
   font-size: 13px;
   color: var(--muted-dev);

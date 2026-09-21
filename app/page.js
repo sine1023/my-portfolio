@@ -509,7 +509,15 @@ export default async function Home() {
             <div className="dev-grid">
               {devProjects.map((p) => (
                 <div className="dev-card" key={p.title}>
-                  <h3>{p.title}</h3>
+                  <h3>
+                    {p.url ? (
+                      <a href={p.url} target="_blank" rel="noreferrer">
+                        {p.title} ↗
+                      </a>
+                    ) : (
+                      p.title
+                    )}
+                  </h3>
                   <p>{p.desc}</p>
                   <div className="tech-tags">
                     {(p.tags || []).map((t) => (

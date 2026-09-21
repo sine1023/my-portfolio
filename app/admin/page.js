@@ -1243,6 +1243,18 @@ export default function AdminPage() {
                   rows={4}
                 />
                 <Field
+                  label="관련 홈페이지 URL (선택)"
+                  value={row.url}
+                  onChange={(v) =>
+                    setPath((p) => {
+                      const arr = [...p.devProjects];
+                      arr[i] = { ...arr[i], url: v };
+                      return { ...p, devProjects: arr };
+                    })
+                  }
+                  placeholder="https://..."
+                />
+                <Field
                   label="기술 태그 (한 줄에 하나씩)"
                   value={arrToLines(row.tags)}
                   onChange={(v) =>
@@ -1273,7 +1285,10 @@ export default function AdminPage() {
               onClick={() =>
                 setPath((p) => ({
                   ...p,
-                  devProjects: [...(p.devProjects || []), { title: "", desc: "", tags: [] }],
+                  devProjects: [
+                    ...(p.devProjects || []),
+                    { title: "", desc: "", tags: [], url: "" },
+                  ],
                 }))
               }
             >
