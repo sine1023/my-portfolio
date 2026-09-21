@@ -16,6 +16,28 @@ async function getContent() {
   return { ...defaultContent, ...data.data };
 }
 
+const TOOL_ICON_SLUGS = {
+  "adobe illustrator": "adobeillustrator",
+  "adobe photoshop": "adobephotoshop",
+  "adobe premiere": "adobepremierepro",
+  "adobe premiere pro": "adobepremierepro",
+  "adobe after effects": "adobeaftereffects",
+  "adobe xd": "adobexd",
+  "adobe indesign": "adobeindesign",
+  "adobe lightroom": "adobelightroom",
+  "adobe audition": "adobeaudition",
+  "davinci resolve": "davinciresolve",
+  "final cut pro": "finalcutpro",
+  "figma": "figma",
+  "notion": "notion",
+  "slack": "slack",
+};
+
+function toolIconSlug(itemLabel) {
+  const name = itemLabel.replace(/\s*\([^)]*\)\s*$/, "").trim().toLowerCase();
+  return TOOL_ICON_SLUGS[name] || null;
+}
+
 function getYouTubeEmbedUrl(url) {
   if (!url) return null;
   try {
@@ -121,9 +143,21 @@ export default async function Home() {
               <div className="skill-group" key={g.label}>
                 <h4>{g.label}</h4>
                 <div className="skill-tags">
-                  {g.items.map((it) => (
-                    <span key={it}>{it}</span>
-                  ))}
+                  {g.items.map((it) => {
+                    const slug = toolIconSlug(it);
+                    return (
+                      <span key={it}>
+                        {slug && (
+                          <img
+                            className="skill-icon"
+                            src={`https://cdn.simpleicons.org/${slug}`}
+                            alt=""
+                          />
+                        )}
+                        {it}
+                      </span>
+                    );
+                  })}
                 </div>
               </div>
             ))}
