@@ -80,14 +80,9 @@ a {
 
 .section-nav-inner {
   display: flex;
+  flex-wrap: wrap;
   gap: 4px;
-  overflow-x: auto;
   padding: 12px 28px;
-  scrollbar-width: none;
-}
-
-.section-nav-inner::-webkit-scrollbar {
-  display: none;
 }
 
 .section-nav-inner a {
