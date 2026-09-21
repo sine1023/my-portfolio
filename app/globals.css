@@ -481,6 +481,29 @@ table.doc-table td {
   padding: 6px 12px;
 }
 
+.about-group {
+  margin-bottom: 26px;
+}
+
+.about-group h4 {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--accent);
+  margin: 0 0 10px;
+}
+
+.about-group ul {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.about-group li {
+  margin-bottom: 6px;
+}
+
 /* ---------- Contact ---------- */
 
 .contact-row {

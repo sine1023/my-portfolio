@@ -266,6 +266,7 @@ const TABS = [
   { id: "certifications", label: "자격증" },
   { id: "education", label: "학력" },
   { id: "volunteer", label: "자원봉사" },
+  { id: "aboutMe", label: "핵심역량" },
   { id: "coverLetter", label: "자기소개서" },
   { id: "contact", label: "연락처" },
   { id: "devProjects", label: "사이드 프로젝트" },
@@ -1159,6 +1160,67 @@ export default function AdminPage() {
               }
             >
               + 자원봉사 추가
+            </button>
+          </section>
+        )}
+
+        {/* About Me (핵심역량) */}
+        {show("aboutMe") && (
+          <section className="a-section">
+            <h2>핵심역량</h2>
+            <p className="admin-note" style={{ marginBottom: 16 }}>
+              채용담당자가 빠르게 훑어볼 수 있는 핵심 요약이에요. 자기소개서
+              바로 위에 표시돼요.
+            </p>
+            {(c.aboutMe || []).map((g, i) => (
+              <div className="a-card" key={i}>
+                <Field
+                  label="블록 제목 (예: 핵심 역량, 일하는 방식)"
+                  value={g.label}
+                  onChange={(v) =>
+                    setPath((p) => {
+                      const arr = [...p.aboutMe];
+                      arr[i] = { ...arr[i], label: v };
+                      return { ...p, aboutMe: arr };
+                    })
+                  }
+                />
+                <Field
+                  label="내용 (한 줄에 하나씩)"
+                  value={arrToLines(g.items)}
+                  onChange={(v) =>
+                    setPath((p) => {
+                      const arr = [...p.aboutMe];
+                      arr[i] = { ...arr[i], items: linesToArr(v) };
+                      return { ...p, aboutMe: arr };
+                    })
+                  }
+                  textarea
+                  rows={rowsFor(arrToLines(g.items))}
+                />
+                <button
+                  className="a-del"
+                  onClick={() =>
+                    setPath((p) => ({
+                      ...p,
+                      aboutMe: p.aboutMe.filter((_, j) => j !== i),
+                    }))
+                  }
+                >
+                  이 블록 삭제
+                </button>
+              </div>
+            ))}
+            <button
+              className="a-add"
+              onClick={() =>
+                setPath((p) => ({
+                  ...p,
+                  aboutMe: [...(p.aboutMe || []), { label: "", items: [] }],
+                }))
+              }
+            >
+              + 블록 추가
             </button>
           </section>
         )}

@@ -164,6 +164,7 @@ export default async function Home() {
     coverLetter,
     volunteer,
     volunteerSummary,
+    aboutMe,
   } = content;
 
   const navItems = [
@@ -176,6 +177,7 @@ export default async function Home() {
     { id: "certifications", label: "자격증", show: certifications?.length > 0 },
     { id: "education", label: "학력", show: education?.length > 0 },
     { id: "volunteer", label: "자원봉사", show: volunteer?.length > 0 },
+    { id: "about-me", label: "핵심역량", show: aboutMe?.length > 0 },
     { id: "cover-letter", label: "자기소개서", show: coverLetter?.length > 0 },
     { id: "contact", label: "연락처", show: true },
     { id: "dev-projects", label: "사이드 프로젝트", show: devProjects?.length > 0 },
@@ -460,6 +462,22 @@ export default async function Home() {
                 <ul>
                   {(v.bullets || []).map((b, j) => (
                     <li key={j}>{b}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </section>
+        )}
+
+        {aboutMe?.length > 0 && (
+          <section id="about-me">
+            <SectionHead ko="핵심역량" en="About Me" />
+            {aboutMe.map((g) => (
+              <div className="about-group" key={g.label}>
+                <h4>{g.label}</h4>
+                <ul>
+                  {(g.items || []).map((it, j) => (
+                    <li key={j}>{it}</li>
                   ))}
                 </ul>
               </div>
