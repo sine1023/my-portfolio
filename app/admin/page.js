@@ -38,29 +38,80 @@ function arrToLines(arr) {
   return (arr || []).join("\n");
 }
 
+function LoginGate({ onUnlock }) {
+  const [pw, setPw] = useState("");
+  const [checking, setChecking] = useState(false);
+  const [error, setError] = useState("");
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setChecking(true);
+    setError("");
+    const { data, error: rpcError } = await supabase.rpc(
+      "check_portfolio_password",
+      { pw }
+    );
+    setChecking(false);
+    if (rpcError) {
+      setError("오류가 발생했습니다: " + rpcError.message);
+      return;
+    }
+    if (data === true) {
+      onUnlock(pw);
+    } else {
+      setError("비밀번호가 틀렸습니다.");
+    }
+  }
+
+  return (
+    <div className="admin-wrap admin-gate">
+      <h1>관리자 로그인</h1>
+      <form onSubmit={handleSubmit}>
+        <Field
+          label="비밀번호"
+          value={pw}
+          onChange={setPw}
+          type="password"
+          placeholder="비밀번호를 입력하세요"
+        />
+        <button className="a-save-btn" type="submit" disabled={checking}>
+          {checking ? "확인 중..." : "입장"}
+        </button>
+        {error && <p className="a-status">❌ {error}</p>}
+      </form>
+    </div>
+  );
+}
+
 export default function AdminPage() {
+  const [unlocked, setUnlocked] = useState(false);
   const [content, setContent] = useState(null);
   const [password, setPassword] = useState("");
   const [status, setStatus] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    (async () => {
-      const { data, error } = await supabase
-        .from("portfolio_content")
-        .select("data")
-        .eq("id", true)
-        .single();
-      if (error || !data) {
-        setContent(defaultContent);
-      } else {
-        setContent({ ...defaultContent, ...data.data });
-      }
-      setLoading(false);
-    })();
-  }, []);
+  async function handleUnlock(pw) {
+    setPassword(pw);
+    setLoading(true);
+    const { data, error } = await supabase
+      .from("portfolio_content")
+      .select("data")
+      .eq("id", true)
+      .single();
+    if (error || !data) {
+      setContent(defaultContent);
+    } else {
+      setContent({ ...defaultContent, ...data.data });
+    }
+    setLoading(false);
+    setUnlocked(true);
+  }
 
-  if (loading) {
+  if (!unlocked) {
+    return <LoginGate onUnlock={handleUnlock} />;
+  }
+
+  if (loading || !content) {
     return (
       <div className="admin-wrap">
         <p>불러오는 중...</p>
@@ -638,12 +689,6 @@ export default function AdminPage() {
       {/* Save */}
       <section className="a-section a-save">
         <h2>저장</h2>
-        <Field
-          label="비밀번호"
-          value={password}
-          onChange={setPassword}
-          type="password"
-        />
         <button className="a-save-btn" onClick={handleSave}>
           저장하기
         </button>

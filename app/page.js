@@ -255,7 +255,7 @@ export default async function Home() {
       <div className="wrap">
         <footer>
           <span>&copy; {new Date().getFullYear()} {hero?.name}</span>
-          <a href="/admin">관리자</a>
+          <a href="/admin">로그인</a>
         </footer>
       </div>
     </main>
