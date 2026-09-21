@@ -155,6 +155,12 @@ function PeriodPicker({ startMonth, endMonth, ongoing, onChange }) {
   );
 }
 
+function formatYearMonth(ym) {
+  if (!ym) return "";
+  const [y, m] = ym.split("-");
+  return `${y}.${m}`;
+}
+
 function LoginGate({ onUnlock }) {
   const [pw, setPw] = useState("");
   const [checking, setChecking] = useState(false);
@@ -572,17 +578,27 @@ export default function AdminPage() {
             <h2>프로젝트</h2>
             {(c.projects || []).map((row, i) => (
               <div className="a-card" key={i}>
-                <Field
-                  label="기간"
-                  value={row.period}
-                  onChange={(v) =>
+                <PeriodPicker
+                  startMonth={row.startMonth}
+                  endMonth={row.endMonth}
+                  ongoing={row.ongoing}
+                  onChange={({ startMonth, endMonth, ongoing }) =>
                     setPath((p) => {
                       const arr = [...p.projects];
-                      arr[i] = { ...arr[i], period: v };
+                      arr[i] = {
+                        ...arr[i],
+                        startMonth,
+                        endMonth,
+                        ongoing,
+                        period: formatPeriod(startMonth, endMonth, ongoing),
+                      };
                       return { ...p, projects: arr };
                     })
                   }
                 />
+                <p className="a-period-preview">
+                  표시될 기간: {row.period || "—"}
+                </p>
                 <Field
                   label="프로젝트명"
                   value={row.title}
@@ -635,7 +651,17 @@ export default function AdminPage() {
               onClick={() =>
                 setPath((p) => ({
                   ...p,
-                  projects: [...(p.projects || []), { period: "", title: "", bullets: [] }],
+                  projects: [
+                    ...(p.projects || []),
+                    {
+                      period: "",
+                      title: "",
+                      bullets: [],
+                      startMonth: "",
+                      endMonth: "",
+                      ongoing: false,
+                    },
+                  ],
                 }))
               }
             >
@@ -712,40 +738,47 @@ export default function AdminPage() {
           <section className="a-section">
             <h2>수상</h2>
             {(c.awards || []).map((row, i) => (
-              <div className="a-row a-row3" key={i}>
-                <input
+              <div className="a-card" key={i}>
+                <Field
+                  label="수상명"
                   value={row.name}
-                  placeholder="수상명"
-                  onChange={(e) =>
+                  onChange={(v) =>
                     setPath((p) => {
                       const arr = [...p.awards];
-                      arr[i] = { ...arr[i], name: e.target.value };
+                      arr[i] = { ...arr[i], name: v };
                       return { ...p, awards: arr };
                     })
                   }
                 />
-                <input
+                <Field
+                  label="수여기관"
                   value={row.org}
-                  placeholder="수여기관"
-                  onChange={(e) =>
+                  onChange={(v) =>
                     setPath((p) => {
                       const arr = [...p.awards];
-                      arr[i] = { ...arr[i], org: e.target.value };
+                      arr[i] = { ...arr[i], org: v };
                       return { ...p, awards: arr };
                     })
                   }
                 />
-                <input
-                  value={row.year}
-                  placeholder="연도"
-                  onChange={(e) =>
-                    setPath((p) => {
-                      const arr = [...p.awards];
-                      arr[i] = { ...arr[i], year: e.target.value };
-                      return { ...p, awards: arr };
-                    })
-                  }
-                />
+                <label className="a-field">
+                  <span>수상월</span>
+                  <input
+                    type="month"
+                    value={row.yearMonth || ""}
+                    onChange={(e) =>
+                      setPath((p) => {
+                        const arr = [...p.awards];
+                        arr[i] = {
+                          ...arr[i],
+                          yearMonth: e.target.value,
+                          year: formatYearMonth(e.target.value),
+                        };
+                        return { ...p, awards: arr };
+                      })
+                    }
+                  />
+                </label>
                 <button
                   className="a-del"
                   onClick={() =>
@@ -761,7 +794,10 @@ export default function AdminPage() {
               onClick={() =>
                 setPath((p) => ({
                   ...p,
-                  awards: [...(p.awards || []), { name: "", org: "", year: "" }],
+                  awards: [
+                    ...(p.awards || []),
+                    { name: "", org: "", year: "", yearMonth: "" },
+                  ],
                 }))
               }
             >
@@ -775,40 +811,47 @@ export default function AdminPage() {
           <section className="a-section">
             <h2>자격증</h2>
             {(c.certifications || []).map((row, i) => (
-              <div className="a-row a-row3" key={i}>
-                <input
+              <div className="a-card" key={i}>
+                <Field
+                  label="자격명"
                   value={row.name}
-                  placeholder="자격명"
-                  onChange={(e) =>
+                  onChange={(v) =>
                     setPath((p) => {
                       const arr = [...p.certifications];
-                      arr[i] = { ...arr[i], name: e.target.value };
+                      arr[i] = { ...arr[i], name: v };
                       return { ...p, certifications: arr };
                     })
                   }
                 />
-                <input
+                <Field
+                  label="발급기관"
                   value={row.org}
-                  placeholder="발급기관"
-                  onChange={(e) =>
+                  onChange={(v) =>
                     setPath((p) => {
                       const arr = [...p.certifications];
-                      arr[i] = { ...arr[i], org: e.target.value };
+                      arr[i] = { ...arr[i], org: v };
                       return { ...p, certifications: arr };
                     })
                   }
                 />
-                <input
-                  value={row.year}
-                  placeholder="취득일"
-                  onChange={(e) =>
-                    setPath((p) => {
-                      const arr = [...p.certifications];
-                      arr[i] = { ...arr[i], year: e.target.value };
-                      return { ...p, certifications: arr };
-                    })
-                  }
-                />
+                <label className="a-field">
+                  <span>취득월</span>
+                  <input
+                    type="month"
+                    value={row.yearMonth || ""}
+                    onChange={(e) =>
+                      setPath((p) => {
+                        const arr = [...p.certifications];
+                        arr[i] = {
+                          ...arr[i],
+                          yearMonth: e.target.value,
+                          year: formatYearMonth(e.target.value),
+                        };
+                        return { ...p, certifications: arr };
+                      })
+                    }
+                  />
+                </label>
                 <button
                   className="a-del"
                   onClick={() =>
@@ -829,7 +872,7 @@ export default function AdminPage() {
                   ...p,
                   certifications: [
                     ...(p.certifications || []),
-                    { name: "", org: "", year: "" },
+                    { name: "", org: "", year: "", yearMonth: "" },
                   ],
                 }))
               }
@@ -867,17 +910,27 @@ export default function AdminPage() {
                     })
                   }
                 />
-                <Field
-                  label="기간"
-                  value={row.period}
-                  onChange={(v) =>
+                <PeriodPicker
+                  startMonth={row.startMonth}
+                  endMonth={row.endMonth}
+                  ongoing={row.ongoing}
+                  onChange={({ startMonth, endMonth, ongoing }) =>
                     setPath((p) => {
                       const arr = [...p.education];
-                      arr[i] = { ...arr[i], period: v };
+                      arr[i] = {
+                        ...arr[i],
+                        startMonth,
+                        endMonth,
+                        ongoing,
+                        period: formatPeriod(startMonth, endMonth, ongoing),
+                      };
                       return { ...p, education: arr };
                     })
                   }
                 />
+                <p className="a-period-preview">
+                  표시될 기간: {row.period || "—"}
+                </p>
                 <Field
                   label="비고 (지역/학점/주야간 등, 선택)"
                   value={row.note}
@@ -909,7 +962,15 @@ export default function AdminPage() {
                   ...p,
                   education: [
                     ...(p.education || []),
-                    { school: "", major: "", period: "", note: "" },
+                    {
+                      school: "",
+                      major: "",
+                      period: "",
+                      note: "",
+                      startMonth: "",
+                      endMonth: "",
+                      ongoing: false,
+                    },
                   ],
                 }))
               }
@@ -928,16 +989,29 @@ export default function AdminPage() {
                 누적 통계 (전체 활동 기간·시간·횟수) — 자원봉사 포털 확인서 등의
                 총계를 넣으면 상단에 배지로 표시돼요. 비워두면 표시 안 됨.
               </p>
-              <Field
-                label="활동 기간 (예: 2012.02 — 2024.09)"
-                value={c.volunteerSummary?.period}
-                onChange={(v) =>
+              <PeriodPicker
+                startMonth={c.volunteerSummary?.startMonth}
+                endMonth={c.volunteerSummary?.endMonth}
+                ongoing={c.volunteerSummary?.ongoing}
+                onChange={({ startMonth, endMonth, ongoing }) =>
                   setPath((p) => ({
                     ...p,
-                    volunteerSummary: { ...p.volunteerSummary, period: v },
+                    volunteerSummary: {
+                      ...p.volunteerSummary,
+                      startMonth,
+                      endMonth,
+                      ongoing,
+                      period: formatPeriod(startMonth, endMonth, ongoing).replace(
+                        /\s*\([^)]*\)\s*$/,
+                        ""
+                      ),
+                    },
                   }))
                 }
               />
+              <p className="a-period-preview">
+                표시될 기간: {c.volunteerSummary?.period || "—"}
+              </p>
               <Field
                 label="누적 시간 (예: 누적 1,273시간 27분)"
                 value={c.volunteerSummary?.hours}
@@ -961,17 +1035,27 @@ export default function AdminPage() {
             </div>
             {(c.volunteer || []).map((row, i) => (
               <div className="a-card" key={i}>
-                <Field
-                  label="기간"
-                  value={row.period}
-                  onChange={(v) =>
+                <PeriodPicker
+                  startMonth={row.startMonth}
+                  endMonth={row.endMonth}
+                  ongoing={row.ongoing}
+                  onChange={({ startMonth, endMonth, ongoing }) =>
                     setPath((p) => {
                       const arr = [...p.volunteer];
-                      arr[i] = { ...arr[i], period: v };
+                      arr[i] = {
+                        ...arr[i],
+                        startMonth,
+                        endMonth,
+                        ongoing,
+                        period: formatPeriod(startMonth, endMonth, ongoing),
+                      };
                       return { ...p, volunteer: arr };
                     })
                   }
                 />
+                <p className="a-period-preview">
+                  표시될 기간: {row.period || "—"}
+                </p>
                 <Field
                   label="활동명"
                   value={row.title}
@@ -1016,7 +1100,14 @@ export default function AdminPage() {
                   ...p,
                   volunteer: [
                     ...(p.volunteer || []),
-                    { period: "", title: "", bullets: [] },
+                    {
+                      period: "",
+                      title: "",
+                      bullets: [],
+                      startMonth: "",
+                      endMonth: "",
+                      ongoing: false,
+                    },
                   ],
                 }))
               }
