@@ -87,6 +87,20 @@ export default async function Home() {
     coverLetter,
   } = content;
 
+  const navItems = [
+    { id: "intro", label: "자기소개", show: true },
+    { id: "skills", label: "스킬", show: skillGroups?.length > 0 },
+    { id: "career", label: "경력", show: career?.length > 0 },
+    { id: "projects", label: "프로젝트", show: projects?.length > 0 },
+    { id: "videos", label: "영상", show: videos?.length > 0 },
+    { id: "awards", label: "수상", show: awards?.length > 0 },
+    { id: "certifications", label: "자격증", show: certifications?.length > 0 },
+    { id: "education", label: "학력", show: education?.length > 0 },
+    { id: "cover-letter", label: "자기소개서", show: coverLetter?.length > 0 },
+    { id: "contact", label: "연락처", show: true },
+    { id: "dev-projects", label: "사이드 프로젝트", show: devProjects?.length > 0 },
+  ].filter((n) => n.show);
+
   return (
     <main>
       <a href="/admin" className="top-admin-link" aria-label="관리자 로그인">
@@ -101,6 +115,19 @@ export default async function Home() {
           <h1 className="hero-name">{hero?.name}</h1>
           <p className="hero-tag">{hero?.tagline}</p>
         </section>
+      </div>
+
+      <nav className="section-nav">
+        <div className="wrap section-nav-inner">
+          {navItems.map((n) => (
+            <a key={n.id} href={`#${n.id}`}>
+              {n.label}
+            </a>
+          ))}
+        </div>
+      </nav>
+
+      <div className="wrap">
 
         <section id="intro">
           <SectionHead ko="자기소개" en="Who am I" />
@@ -349,7 +376,7 @@ export default async function Home() {
       </div>
 
       {devProjects?.length > 0 && (
-        <div className="dev-section">
+        <div className="dev-section" id="dev-projects">
           <div className="wrap">
             <SectionHead ko="사이드 프로젝트" en="Side Projects" />
             <p className="dev-intro">
