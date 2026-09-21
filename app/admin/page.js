@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabaseClient";
 import defaultContent from "../../lib/defaultContent";
 
@@ -159,6 +159,51 @@ function formatYearMonth(ym) {
   if (!ym) return "";
   const [y, m] = ym.split("-");
   return `${y}.${m}`;
+}
+
+function getYouTubeId(url) {
+  if (!url) return null;
+  try {
+    const u = new URL(url);
+    if (u.hostname.includes("youtu.be")) return u.pathname.slice(1);
+    if (u.hostname.includes("youtube.com")) {
+      if (u.pathname === "/watch") return u.searchParams.get("v");
+      if (u.pathname.startsWith("/shorts/")) return u.pathname.split("/")[2];
+      if (u.pathname.startsWith("/embed/")) return u.pathname.split("/")[2];
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+function VideoPreview({ url }) {
+  const [title, setTitle] = useState(null);
+  const id = getYouTubeId(url);
+
+  useEffect(() => {
+    setTitle(null);
+    if (!id) return;
+    let cancelled = false;
+    fetch(`https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (!cancelled && data) setTitle(data.title);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [url, id]);
+
+  if (!id) return null;
+
+  return (
+    <div className="a-video-preview">
+      <img src={`https://img.youtube.com/vi/${id}/mqdefault.jpg`} alt="" />
+      <span>{title || "유튜브 영상 (제목 불러오는 중...)"}</span>
+    </div>
+  );
 }
 
 function LoginGate({ onUnlock }) {
@@ -702,6 +747,7 @@ export default function AdminPage() {
                     })
                   }
                 />
+                <VideoPreview url={row.url} />
                 <ContributionEditor
                   items={row.contributions}
                   onChange={(arr) =>

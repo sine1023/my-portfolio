@@ -835,6 +835,30 @@ footer {
   margin: 0 0 14px;
 }
 
+.a-video-preview {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  padding: 8px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+}
+
+.a-video-preview img {
+  width: 80px;
+  height: 45px;
+  object-fit: cover;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.a-video-preview span {
+  font-size: 13px;
+  color: var(--ink);
+}
+
 .a-contrib {
   border-top: 1px dashed var(--line);
   padding-top: 12px;
