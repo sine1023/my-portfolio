@@ -444,3 +444,138 @@ footer {
     transition: none !important;
   }
 }
+
+/* ---------- Admin page ---------- */
+
+.admin-wrap {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 48px 24px 120px;
+}
+
+.admin-wrap h1 {
+  font-family: var(--font-display);
+  font-size: 28px;
+  margin: 0 0 8px;
+}
+
+.admin-note {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 0 0 36px;
+}
+
+.a-section {
+  border-top: 1px solid var(--line);
+  padding: 28px 0;
+}
+
+.a-section h2 {
+  font-family: var(--font-display);
+  font-size: 18px;
+  margin: 0 0 16px;
+}
+
+.a-field {
+  display: block;
+  margin-bottom: 14px;
+}
+
+.a-field span {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.a-field input,
+.a-field textarea,
+.a-row input {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 9px 10px;
+  font-size: 14px;
+  font-family: var(--font-body);
+  background: var(--card);
+  color: var(--ink);
+}
+
+.a-field textarea {
+  resize: vertical;
+}
+
+.a-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 16px;
+  margin-bottom: 14px;
+}
+
+.a-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 8px;
+  margin-bottom: 8px;
+  align-items: center;
+}
+
+.a-row.a-row3 {
+  grid-template-columns: 1fr 1fr 1fr auto;
+}
+
+.a-del {
+  background: none;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 8px 10px;
+  font-size: 12px;
+  color: var(--accent);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.a-add {
+  background: none;
+  border: 1px dashed var(--line);
+  border-radius: 3px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--muted);
+  cursor: pointer;
+  width: 100%;
+}
+
+.a-add:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.a-save {
+  border-top: 2px solid var(--ink);
+}
+
+.a-save-btn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  padding: 12px 20px;
+  font-size: 15px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.a-status {
+  margin-top: 12px;
+  font-size: 13px;
+}
+
+@media (max-width: 560px) {
+  .a-row,
+  .a-row.a-row3 {
+    grid-template-columns: 1fr;
+  }
+}
