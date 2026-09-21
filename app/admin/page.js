@@ -43,6 +43,52 @@ function rowsFor(value, min = 4) {
   return Math.max(min, lines + 1);
 }
 
+function ContributionEditor({ items, onChange }) {
+  const list = items || [];
+  return (
+    <div className="a-contrib">
+      <span className="a-contrib-label">기여도 (역할별, 선택)</span>
+      {list.map((c, i) => (
+        <div className="a-row a-row-contrib" key={i}>
+          <input
+            placeholder="역할 (예: 기획)"
+            value={c.role}
+            onChange={(e) => {
+              const arr = [...list];
+              arr[i] = { ...arr[i], role: e.target.value };
+              onChange(arr);
+            }}
+          />
+          <input
+            type="number"
+            placeholder="%"
+            value={c.percent}
+            onChange={(e) => {
+              const arr = [...list];
+              arr[i] = { ...arr[i], percent: e.target.value };
+              onChange(arr);
+            }}
+          />
+          <button
+            className="a-del"
+            type="button"
+            onClick={() => onChange(list.filter((_, j) => j !== i))}
+          >
+            삭제
+          </button>
+        </div>
+      ))}
+      <button
+        className="a-add"
+        type="button"
+        onClick={() => onChange([...list, { role: "", percent: 100 }])}
+      >
+        + 역할 추가
+      </button>
+    </div>
+  );
+}
+
 function LoginGate({ onUnlock }) {
   const [pw, setPw] = useState("");
   const [checking, setChecking] = useState(false);
@@ -102,6 +148,7 @@ const TABS = [
   { id: "awards", label: "수상" },
   { id: "certifications", label: "자격증" },
   { id: "education", label: "학력" },
+  { id: "volunteer", label: "자원봉사" },
   { id: "coverLetter", label: "자기소개서" },
   { id: "contact", label: "연락처" },
   { id: "devProjects", label: "사이드 프로젝트" },
@@ -241,6 +288,12 @@ export default function AdminPage() {
                 프로필 카드 —{" "}
                 {key === "basic" ? "기본정보" : key === "career" ? "경력요약" : "연락처"}
               </h2>
+              {key === "career" && (
+                <p className="admin-note" style={{ marginBottom: 16 }}>
+                  항목명이 "총 경력"이면, 값을 뭘 입력하든 경력 탭의 기간을
+                  자동으로 합산한 값으로 사이트에 표시돼요.
+                </p>
+              )}
               {(c.profile?.[key] || []).map((row, i) => (
                 <div className="a-row" key={i}>
                   <input
@@ -393,6 +446,16 @@ export default function AdminPage() {
                   textarea
                   rows={rowsFor(arrToLines(row.bullets))}
                 />
+                <ContributionEditor
+                  items={row.contributions}
+                  onChange={(arr) =>
+                    setPath((p) => {
+                      const a = [...p.career];
+                      a[i] = { ...a[i], contributions: arr };
+                      return { ...p, career: a };
+                    })
+                  }
+                />
                 <button
                   className="a-del"
                   onClick={() =>
@@ -458,6 +521,16 @@ export default function AdminPage() {
                   textarea
                   rows={rowsFor(arrToLines(row.bullets))}
                 />
+                <ContributionEditor
+                  items={row.contributions}
+                  onChange={(arr) =>
+                    setPath((p) => {
+                      const a = [...p.projects];
+                      a[i] = { ...a[i], contributions: arr };
+                      return { ...p, projects: a };
+                    })
+                  }
+                />
                 <button
                   className="a-del"
                   onClick={() =>
@@ -494,26 +567,36 @@ export default function AdminPage() {
               새 탭으로 열리는 카드로 표시돼요.
             </p>
             {(c.videos || []).map((row, i) => (
-              <div className="a-row" key={i}>
-                <input
+              <div className="a-card" key={i}>
+                <Field
+                  label="제목"
                   value={row.title}
-                  placeholder="제목"
-                  onChange={(e) =>
+                  onChange={(v) =>
                     setPath((p) => {
                       const arr = [...p.videos];
-                      arr[i] = { ...arr[i], title: e.target.value };
+                      arr[i] = { ...arr[i], title: v };
                       return { ...p, videos: arr };
                     })
                   }
                 />
-                <input
+                <Field
+                  label="링크(URL)"
                   value={row.url}
-                  placeholder="링크(URL)"
-                  onChange={(e) =>
+                  onChange={(v) =>
                     setPath((p) => {
                       const arr = [...p.videos];
-                      arr[i] = { ...arr[i], url: e.target.value };
+                      arr[i] = { ...arr[i], url: v };
                       return { ...p, videos: arr };
+                    })
+                  }
+                />
+                <ContributionEditor
+                  items={row.contributions}
+                  onChange={(arr) =>
+                    setPath((p) => {
+                      const a = [...p.videos];
+                      a[i] = { ...a[i], contributions: arr };
+                      return { ...p, videos: a };
                     })
                   }
                 />
@@ -523,7 +606,7 @@ export default function AdminPage() {
                     setPath((p) => ({ ...p, videos: p.videos.filter((_, j) => j !== i) }))
                   }
                 >
-                  삭제
+                  이 영상 삭제
                 </button>
               </div>
             ))}
@@ -732,6 +815,77 @@ export default function AdminPage() {
               }
             >
               + 학력 추가
+            </button>
+          </section>
+        )}
+
+        {/* Volunteer */}
+        {show("volunteer") && (
+          <section className="a-section">
+            <h2>자원봉사</h2>
+            {(c.volunteer || []).map((row, i) => (
+              <div className="a-card" key={i}>
+                <Field
+                  label="기간"
+                  value={row.period}
+                  onChange={(v) =>
+                    setPath((p) => {
+                      const arr = [...p.volunteer];
+                      arr[i] = { ...arr[i], period: v };
+                      return { ...p, volunteer: arr };
+                    })
+                  }
+                />
+                <Field
+                  label="활동명"
+                  value={row.title}
+                  onChange={(v) =>
+                    setPath((p) => {
+                      const arr = [...p.volunteer];
+                      arr[i] = { ...arr[i], title: v };
+                      return { ...p, volunteer: arr };
+                    })
+                  }
+                />
+                <Field
+                  label="내용 (한 줄에 하나씩)"
+                  value={arrToLines(row.bullets)}
+                  onChange={(v) =>
+                    setPath((p) => {
+                      const arr = [...p.volunteer];
+                      arr[i] = { ...arr[i], bullets: linesToArr(v) };
+                      return { ...p, volunteer: arr };
+                    })
+                  }
+                  textarea
+                  rows={rowsFor(arrToLines(row.bullets))}
+                />
+                <button
+                  className="a-del"
+                  onClick={() =>
+                    setPath((p) => ({
+                      ...p,
+                      volunteer: p.volunteer.filter((_, j) => j !== i),
+                    }))
+                  }
+                >
+                  이 활동 삭제
+                </button>
+              </div>
+            ))}
+            <button
+              className="a-add"
+              onClick={() =>
+                setPath((p) => ({
+                  ...p,
+                  volunteer: [
+                    ...(p.volunteer || []),
+                    { period: "", title: "", bullets: [] },
+                  ],
+                }))
+              }
+            >
+              + 자원봉사 추가
             </button>
           </section>
         )}

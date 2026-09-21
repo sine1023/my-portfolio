@@ -1,5 +1,6 @@
 import { supabase } from "../lib/supabaseClient";
 import defaultContent from "../lib/defaultContent";
+import SectionNav from "./components/SectionNav";
 
 export const revalidate = 0; // 항상 최신 데이터로
 
@@ -60,6 +61,82 @@ function getYouTubeEmbedUrl(url) {
   }
 }
 
+function ContributionList({ items }) {
+  if (!items || items.length === 0) return null;
+  return (
+    <span className="contribution-list">
+      {items.map((c, i) => {
+        const n = Math.max(0, Math.min(100, Number(c.percent) || 0));
+        return (
+          <span className="contribution-badge" key={i}>
+            <span className="cb-bar">
+              <span className="cb-fill" style={{ width: `${n}%` }} />
+            </span>
+            {c.role} {n}%
+          </span>
+        );
+      })}
+    </span>
+  );
+}
+
+function periodSortKey(str) {
+  if (!str) return 0;
+  if (/진행중|현재|present/i.test(str)) return 999999;
+  const matches = str.match(/\d{4}(?:\.\d{1,2})?/g) || [];
+  if (matches.length === 0) return 0;
+  const last = matches[matches.length - 1];
+  const [y, m] = last.split(".");
+  return parseInt(y, 10) * 100 + (m ? parseInt(m, 10) : 0);
+}
+
+function byRecency(field) {
+  return (arr) =>
+    [...(arr || [])].sort(
+      (a, b) => periodSortKey(b[field]) - periodSortKey(a[field])
+    );
+}
+
+function parseYearMonth(str) {
+  if (!str) return null;
+  const m = str.match(/(\d{4})\.(\d{1,2})/);
+  if (!m) return null;
+  return { y: parseInt(m[1], 10), m: parseInt(m[2], 10) };
+}
+
+function calcTotalCareerMonths(career) {
+  let total = 0;
+  for (const c of career || []) {
+    const period = c.period || "";
+    const matches = [...period.matchAll(/\d{4}\.\d{1,2}/g)].map((m) => m[0]);
+    const start = matches[0] ? parseYearMonth(matches[0]) : null;
+    if (!start) continue;
+
+    let end;
+    if (matches[1]) {
+      end = parseYearMonth(matches[1]);
+    } else if (/진행중|현재/i.test(period)) {
+      const now = new Date();
+      end = { y: now.getFullYear(), m: now.getMonth() + 1 };
+    } else {
+      continue; // 종료 시점을 알 수 없는 항목은 계산에서 제외
+    }
+
+    const months = (end.y - start.y) * 12 + (end.m - start.m) + 1;
+    if (months > 0) total += months;
+  }
+  return total;
+}
+
+function formatTotalCareer(totalMonths) {
+  if (totalMonths <= 0) return null;
+  const years = Math.floor(totalMonths / 12);
+  const months = totalMonths % 12;
+  if (years > 0 && months > 0) return `${years}년 ${months}개월`;
+  if (years > 0) return `${years}년`;
+  return `${months}개월`;
+}
+
 function SectionHead({ ko, en }) {
   return (
     <div className="section-head">
@@ -85,6 +162,7 @@ export default async function Home() {
     contact,
     devProjects,
     coverLetter,
+    volunteer,
   } = content;
 
   const navItems = [
@@ -96,10 +174,19 @@ export default async function Home() {
     { id: "awards", label: "수상", show: awards?.length > 0 },
     { id: "certifications", label: "자격증", show: certifications?.length > 0 },
     { id: "education", label: "학력", show: education?.length > 0 },
+    { id: "volunteer", label: "자원봉사", show: volunteer?.length > 0 },
     { id: "cover-letter", label: "자기소개서", show: coverLetter?.length > 0 },
     { id: "contact", label: "연락처", show: true },
     { id: "dev-projects", label: "사이드 프로젝트", show: devProjects?.length > 0 },
   ].filter((n) => n.show);
+
+  const sortedCareer = byRecency("period")(career);
+  const sortedProjects = byRecency("period")(projects);
+  const sortedAwards = byRecency("year")(awards);
+  const sortedCertifications = byRecency("year")(certifications);
+  const sortedEducation = byRecency("period")(education);
+  const sortedVolunteer = byRecency("period")(volunteer);
+  const totalCareerText = formatTotalCareer(calcTotalCareerMonths(career));
 
   return (
     <main>
@@ -117,15 +204,7 @@ export default async function Home() {
         </section>
       </div>
 
-      <nav className="section-nav">
-        <div className="wrap section-nav-inner">
-          {navItems.map((n) => (
-            <a key={n.id} href={`#${n.id}`}>
-              {n.label}
-            </a>
-          ))}
-        </div>
-      </nav>
+      <SectionNav items={navItems} />
 
       <div className="wrap">
 
@@ -152,7 +231,9 @@ export default async function Home() {
                 {(profile?.career || []).map((r) => (
                   <li key={r.k}>
                     <span className="k">{r.k}</span>
-                    {r.v}
+                    {r.k?.trim() === "총 경력" && totalCareerText
+                      ? totalCareerText
+                      : r.v}
                   </li>
                 ))}
               </ul>
@@ -203,10 +284,13 @@ export default async function Home() {
           <section id="career">
             <SectionHead ko="경력" en="Career" />
             <div className="timeline">
-              {career.map((c, i) => (
+              {sortedCareer.map((c, i) => (
                 <div className="timeline-row" key={i}>
                   <div className="period">{c.period}</div>
-                  <div className="org">{c.org}</div>
+                  <div className="org">
+                    {c.org}
+                  </div>
+                  <ContributionList items={c.contributions} />
                   <ul>
                     {(c.bullets || []).map((b, j) => (
                       <li key={j}>{b}</li>
@@ -221,10 +305,13 @@ export default async function Home() {
         {projects?.length > 0 && (
           <section id="projects">
             <SectionHead ko="프로젝트" en="Projects" />
-            {projects.map((p, i) => (
+            {sortedProjects.map((p, i) => (
               <div className="project-entry" key={i}>
                 <div className="period">{p.period}</div>
-                <h3>{p.title}</h3>
+                <h3>
+                  {p.title}
+                </h3>
+                <ContributionList items={p.contributions} />
                 <ul>
                   {(p.bullets || []).map((b, j) => (
                     <li key={j}>{b}</li>
@@ -253,19 +340,22 @@ export default async function Home() {
                         />
                       </div>
                       {v.title && <p className="video-caption">{v.title}</p>}
+                      <ContributionList items={v.contributions} />
                     </div>
                   );
                 }
                 return (
-                  <a
-                    className="video-slot"
-                    href={v.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    key={i}
-                  >
-                    {v.title}
-                  </a>
+                  <div className="video-item" key={i}>
+                    <a
+                      className="video-slot"
+                      href={v.url}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {v.title}
+                    </a>
+                    <ContributionList items={v.contributions} />
+                  </div>
                 );
               })}
             </div>
@@ -284,7 +374,7 @@ export default async function Home() {
                 </tr>
               </thead>
               <tbody>
-                {awards.map((a, i) => (
+                {sortedAwards.map((a, i) => (
                   <tr key={i}>
                     <td>{a.name}</td>
                     <td>{a.org}</td>
@@ -308,7 +398,7 @@ export default async function Home() {
                 </tr>
               </thead>
               <tbody>
-                {certifications.map((a, i) => (
+                {sortedCertifications.map((a, i) => (
                   <tr key={i}>
                     <td>{a.name}</td>
                     <td>{a.org}</td>
@@ -332,7 +422,7 @@ export default async function Home() {
                 </tr>
               </thead>
               <tbody>
-                {education.map((e, i) => (
+                {sortedEducation.map((e, i) => (
                   <tr key={i}>
                     <td>{e.school}</td>
                     <td>{e.major}</td>
@@ -341,6 +431,23 @@ export default async function Home() {
                 ))}
               </tbody>
             </table>
+          </section>
+        )}
+
+        {volunteer?.length > 0 && (
+          <section id="volunteer">
+            <SectionHead ko="자원봉사" en="Volunteer" />
+            {sortedVolunteer.map((v, i) => (
+              <div className="project-entry" key={i}>
+                <div className="period">{v.period}</div>
+                <h3>{v.title}</h3>
+                <ul>
+                  {(v.bullets || []).map((b, j) => (
+                    <li key={j}>{b}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
           </section>
         )}
 
