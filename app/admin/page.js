@@ -206,6 +206,14 @@ function VideoPreview({ url }) {
   );
 }
 
+function moveItem(arr, index, dir) {
+  const newIndex = index + dir;
+  if (newIndex < 0 || newIndex >= arr.length) return arr;
+  const copy = [...arr];
+  [copy[index], copy[newIndex]] = [copy[newIndex], copy[index]];
+  return copy;
+}
+
 function LoginGate({ onUnlock }) {
   const [pw, setPw] = useState("");
   const [checking, setChecking] = useState(false);
@@ -279,6 +287,7 @@ export default function AdminPage() {
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("hero");
+  const [draggedVideoIndex, setDraggedVideoIndex] = useState(null);
 
   async function handleUnlock(pw) {
     setPassword(pw);
@@ -725,7 +734,37 @@ export default function AdminPage() {
               새 탭으로 열리는 카드로 표시돼요.
             </p>
             {(c.videos || []).map((row, i) => (
-              <div className="a-card" key={i}>
+              <div
+                className={
+                  "a-card a-draggable" +
+                  (draggedVideoIndex === i ? " dragging" : "")
+                }
+                key={i}
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  if (draggedVideoIndex === null || draggedVideoIndex === i) {
+                    setDraggedVideoIndex(null);
+                    return;
+                  }
+                  setPath((p) => {
+                    const arr = [...p.videos];
+                    const [moved] = arr.splice(draggedVideoIndex, 1);
+                    arr.splice(i, 0, moved);
+                    return { ...p, videos: arr };
+                  });
+                  setDraggedVideoIndex(null);
+                }}
+              >
+                <div
+                  className="a-drag-handle"
+                  draggable
+                  onDragStart={() => setDraggedVideoIndex(i)}
+                  onDragEnd={() => setDraggedVideoIndex(null)}
+                  title="끌어서 순서 바꾸기"
+                >
+                  ⠿ 끌어서 이동
+                </div>
                 <Field
                   label="제목"
                   value={row.title}
@@ -759,6 +798,34 @@ export default function AdminPage() {
                     })
                   }
                 />
+                <div className="a-reorder">
+                  <button
+                    type="button"
+                    className="a-move"
+                    disabled={i === 0}
+                    onClick={() =>
+                      setPath((p) => ({
+                        ...p,
+                        videos: moveItem(p.videos, i, -1),
+                      }))
+                    }
+                  >
+                    ▲ 위로
+                  </button>
+                  <button
+                    type="button"
+                    className="a-move"
+                    disabled={i === (c.videos || []).length - 1}
+                    onClick={() =>
+                      setPath((p) => ({
+                        ...p,
+                        videos: moveItem(p.videos, i, 1),
+                      }))
+                    }
+                  >
+                    ▼ 아래로
+                  </button>
+                </div>
                 <button
                   className="a-del"
                   onClick={() =>
