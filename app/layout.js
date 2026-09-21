@@ -20,8 +20,23 @@ const mono = IBM_Plex_Mono({
 });
 
 export const metadata = {
+  metadataBase: new URL("https://my-portfolio-sine3.vercel.app"),
   title: "정성재 — Video PD",
-  description: "영상 PD 정성재(시네)의 작업물과 사이드 프로젝트",
+  description:
+    "기획부터 연출, 편집까지 — 현장과 후반작업을 모두 아우르는 PD, 정성재의 포트폴리오입니다.",
+  openGraph: {
+    title: "정성재 — Video PD",
+    description:
+      "기획부터 연출, 편집까지 — 현장과 후반작업을 모두 아우르는 PD, 정성재의 포트폴리오입니다.",
+    locale: "ko_KR",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "정성재 — Video PD",
+    description:
+      "기획부터 연출, 편집까지 — 현장과 후반작업을 모두 아우르는 PD, 정성재의 포트폴리오입니다.",
+  },
 };
 
 export default function RootLayout({ children }) {
