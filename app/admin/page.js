@@ -758,36 +758,47 @@ export default function AdminPage() {
           <section className="a-section">
             <h2>학력</h2>
             {(c.education || []).map((row, i) => (
-              <div className="a-row a-row3" key={i}>
-                <input
+              <div className="a-card" key={i}>
+                <Field
+                  label="학교"
                   value={row.school}
-                  placeholder="학교"
-                  onChange={(e) =>
+                  onChange={(v) =>
                     setPath((p) => {
                       const arr = [...p.education];
-                      arr[i] = { ...arr[i], school: e.target.value };
+                      arr[i] = { ...arr[i], school: v };
                       return { ...p, education: arr };
                     })
                   }
                 />
-                <input
+                <Field
+                  label="전공"
                   value={row.major}
-                  placeholder="전공"
-                  onChange={(e) =>
+                  onChange={(v) =>
                     setPath((p) => {
                       const arr = [...p.education];
-                      arr[i] = { ...arr[i], major: e.target.value };
+                      arr[i] = { ...arr[i], major: v };
                       return { ...p, education: arr };
                     })
                   }
                 />
-                <input
+                <Field
+                  label="기간"
                   value={row.period}
-                  placeholder="기간"
-                  onChange={(e) =>
+                  onChange={(v) =>
                     setPath((p) => {
                       const arr = [...p.education];
-                      arr[i] = { ...arr[i], period: e.target.value };
+                      arr[i] = { ...arr[i], period: v };
+                      return { ...p, education: arr };
+                    })
+                  }
+                />
+                <Field
+                  label="비고 (지역/학점/주야간 등, 선택)"
+                  value={row.note}
+                  onChange={(v) =>
+                    setPath((p) => {
+                      const arr = [...p.education];
+                      arr[i] = { ...arr[i], note: v };
                       return { ...p, education: arr };
                     })
                   }
@@ -810,7 +821,10 @@ export default function AdminPage() {
               onClick={() =>
                 setPath((p) => ({
                   ...p,
-                  education: [...(p.education || []), { school: "", major: "", period: "" }],
+                  education: [
+                    ...(p.education || []),
+                    { school: "", major: "", period: "", note: "" },
+                  ],
                 }))
               }
             >

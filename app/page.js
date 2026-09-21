@@ -420,6 +420,7 @@ export default async function Home() {
                   <th>학교</th>
                   <th>전공</th>
                   <th>기간</th>
+                  <th>비고</th>
                 </tr>
               </thead>
               <tbody>
@@ -428,6 +429,7 @@ export default async function Home() {
                     <td>{e.school}</td>
                     <td>{e.major}</td>
                     <td>{e.period}</td>
+                    <td>{e.note}</td>
                   </tr>
                 ))}
               </tbody>
