@@ -11,6 +11,8 @@ if "%msg%"=="" set msg=update
 
 git add .
 git commit -m "%msg%"
+rem Pull changes pushed from elsewhere first (e.g. by Claude), then push.
+git pull --rebase
 git push
 
 echo.
