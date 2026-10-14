@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabaseClient";
 import defaultContent from "../../lib/defaultContent";
+import { unlockResume } from "../resume/actions";
 
 function Field({ label, value, onChange, textarea, placeholder, type, rows }) {
   return (
@@ -314,6 +315,28 @@ export default function AdminPage() {
   const [activeTab, setActiveTab] = useState("hero");
   const [draggedVideoIndex, setDraggedVideoIndex] = useState(null);
   const [expandedVideos, setExpandedVideos] = useState({});
+  const [openingResume, setOpeningResume] = useState(false);
+
+  async function handleOpenResume() {
+    // 새 탭은 클릭 직후에 열어야 팝업 차단에 걸리지 않음 → 먼저 열고 주소는 나중에 지정
+    const win = window.open("", "_blank");
+    setOpeningResume(true);
+    try {
+      const ok = await unlockResume(password);
+      if (!ok) {
+        win?.close();
+        setStatus("❌ 이력서를 열지 못했습니다. 다시 로그인해 주세요.");
+        return;
+      }
+      if (win) win.location.href = "/resume";
+      else window.location.href = "/resume";
+    } catch {
+      win?.close();
+      setStatus("❌ 이력서를 여는 중 오류가 발생했습니다.");
+    } finally {
+      setOpeningResume(false);
+    }
+  }
 
   async function handleUnlock(pw) {
     setPassword(pw);
@@ -381,6 +404,14 @@ export default function AdminPage() {
         탭에서 섹션을 고른 뒤 수정하고, 화면 아래 저장 버튼으로 언제든
         저장하세요.
       </p>
+      <button
+        type="button"
+        className="a-resume-btn"
+        onClick={handleOpenResume}
+        disabled={openingResume}
+      >
+        {openingResume ? "여는 중..." : "이력서 PDF로 보기 ↗"}
+      </button>
 
       <div className="a-tabs">
         {TABS.map((t) => (

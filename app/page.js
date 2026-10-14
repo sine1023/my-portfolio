@@ -138,13 +138,6 @@ export default async function Home() {
           <p className="hero-role">{hero?.role}</p>
           <h1 className="hero-name">{hero?.name}</h1>
           <p className="hero-tag">{hero?.tagline}</p>
-          <a href="/resume" className="hero-resume-btn">
-            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-              <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" />
-              <path d="M14 3v5h5M9 13h6M9 17h6" />
-            </svg>
-            이력서 PDF로 보기
-          </a>
         </section>
       </div>
 

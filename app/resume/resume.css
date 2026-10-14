@@ -46,6 +46,28 @@
   color: #fff;
 }
 
+.rs-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.rs-lock {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: #a9aca5;
+  background: none;
+  border: 1px solid #3a3d40;
+  border-radius: 3px;
+  padding: 4px 10px;
+  cursor: pointer;
+}
+
+.rs-lock:hover {
+  color: #fff;
+  border-color: #a9aca5;
+}
+
 .rs-toolbar-actions {
   display: flex;
   align-items: center;

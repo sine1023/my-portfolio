@@ -1,10 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { lockResume } from "./actions";
 
 // 화면에서만 보이는 상단 도구 막대 (인쇄/PDF에는 나오지 않음)
 export default function ResumeToolbar({ hasCoverLetter }) {
+  const router = useRouter();
   const [withLetter, setWithLetter] = useState(false);
+
+  async function handleLock() {
+    await lockResume();
+    router.refresh();
+  }
 
   useEffect(() => {
     // 주소에 ?letter=1 을 붙이면 자기소개서를 포함한 상태로 열립니다.
@@ -19,9 +27,14 @@ export default function ResumeToolbar({ hasCoverLetter }) {
   return (
     <div className="rs-toolbar">
       <div className="rs-toolbar-inner">
-        <a href="/" className="rs-back">
-          ← 포트폴리오
-        </a>
+        <div className="rs-toolbar-left">
+          <a href="/admin" className="rs-back">
+            ← 관리자 페이지
+          </a>
+          <button type="button" className="rs-lock" onClick={handleLock}>
+            잠그기
+          </button>
+        </div>
         <div className="rs-toolbar-actions">
           {hasCoverLetter && (
             <label className="rs-toggle">

@@ -4,12 +4,23 @@ import {
   calcTotalCareerMonths,
   formatTotalCareer,
 } from "../../lib/content";
+import { cookies } from "next/headers";
+import { RESUME_COOKIE, isAdminPassword } from "../../lib/resumeAccess";
 import ResumeToolbar from "./ResumeToolbar";
+import ResumeLogin from "./ResumeLogin";
 import "./resume.css";
 
 export const revalidate = 0; // 관리자 페이지에서 고친 내용이 바로 반영되도록
 
+async function hasAccess() {
+  const pw = cookies().get(RESUME_COOKIE)?.value;
+  return isAdminPassword(pw);
+}
+
 export async function generateMetadata() {
+  if (!(await hasAccess())) {
+    return { title: "이력서 — 관리자 전용", robots: { index: false } };
+  }
   const content = await getContent();
   const name = content?.hero?.name || "이력서";
   // PDF로 저장할 때 이 제목이 기본 파일명이 됩니다.
@@ -65,6 +76,11 @@ function contributionText(items) {
 }
 
 export default async function ResumePage() {
+  // 관리자 비밀번호 확인 전에는 이력서 내용을 아예 내려보내지 않습니다.
+  if (!(await hasAccess())) {
+    return <ResumeLogin />;
+  }
+
   const content = await getContent();
   const {
     hero,
