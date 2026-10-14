@@ -136,6 +136,28 @@ a {
   margin: 20px 0 0;
 }
 
+.hero-resume-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 28px;
+  padding: 10px 18px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--accent);
+  text-decoration: none;
+  border: 1px solid var(--accent);
+  border-radius: 3px;
+  background: transparent;
+  transition: background 0.15s, color 0.15s;
+}
+
+.hero-resume-btn:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
 /* ---------- Section heading ---------- */
 
 section {

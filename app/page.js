@@ -1,21 +1,12 @@
-import { supabase } from "../lib/supabaseClient";
-import defaultContent from "../lib/defaultContent";
+import {
+  getContent,
+  byRecency,
+  calcTotalCareerMonths,
+  formatTotalCareer,
+} from "../lib/content";
 import SectionNav from "./components/SectionNav";
 
 export const revalidate = 0; // 항상 최신 데이터로
-
-async function getContent() {
-  const { data, error } = await supabase
-    .from("portfolio_content")
-    .select("data")
-    .eq("id", true)
-    .single();
-
-  if (error || !data) {
-    return defaultContent;
-  }
-  return { ...defaultContent, ...data.data };
-}
 
 const TOOL_ICON_SLUGS = {
   "adobe illustrator": "adobeillustrator",
@@ -78,63 +69,6 @@ function ContributionList({ items }) {
       })}
     </span>
   );
-}
-
-function periodSortKey(str) {
-  if (!str) return 0;
-  if (/진행중|현재|present/i.test(str)) return 999999;
-  const matches = str.match(/\d{4}(?:\.\d{1,2})?/g) || [];
-  if (matches.length === 0) return 0;
-  const last = matches[matches.length - 1];
-  const [y, m] = last.split(".");
-  return parseInt(y, 10) * 100 + (m ? parseInt(m, 10) : 0);
-}
-
-function byRecency(field) {
-  return (arr) =>
-    [...(arr || [])].sort(
-      (a, b) => periodSortKey(b[field]) - periodSortKey(a[field])
-    );
-}
-
-function parseYearMonth(str) {
-  if (!str) return null;
-  const m = str.match(/(\d{4})\.(\d{1,2})/);
-  if (!m) return null;
-  return { y: parseInt(m[1], 10), m: parseInt(m[2], 10) };
-}
-
-function calcTotalCareerMonths(career) {
-  let total = 0;
-  for (const c of career || []) {
-    const period = c.period || "";
-    const matches = [...period.matchAll(/\d{4}\.\d{1,2}/g)].map((m) => m[0]);
-    const start = matches[0] ? parseYearMonth(matches[0]) : null;
-    if (!start) continue;
-
-    let end;
-    if (matches[1]) {
-      end = parseYearMonth(matches[1]);
-    } else if (/진행중|현재/i.test(period)) {
-      const now = new Date();
-      end = { y: now.getFullYear(), m: now.getMonth() + 1 };
-    } else {
-      continue; // 종료 시점을 알 수 없는 항목은 계산에서 제외
-    }
-
-    const months = (end.y - start.y) * 12 + (end.m - start.m) + 1;
-    if (months > 0) total += months;
-  }
-  return total;
-}
-
-function formatTotalCareer(totalMonths) {
-  if (totalMonths <= 0) return null;
-  const years = Math.floor(totalMonths / 12);
-  const months = totalMonths % 12;
-  if (years > 0 && months > 0) return `${years}년 ${months}개월`;
-  if (years > 0) return `${years}년`;
-  return `${months}개월`;
 }
 
 function SectionHead({ ko, en }) {
@@ -204,6 +138,13 @@ export default async function Home() {
           <p className="hero-role">{hero?.role}</p>
           <h1 className="hero-name">{hero?.name}</h1>
           <p className="hero-tag">{hero?.tagline}</p>
+          <a href="/resume" className="hero-resume-btn">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+              <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" />
+              <path d="M14 3v5h5M9 13h6M9 17h6" />
+            </svg>
+            이력서 PDF로 보기
+          </a>
         </section>
       </div>
 
