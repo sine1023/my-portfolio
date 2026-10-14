@@ -218,11 +218,17 @@
 /* ---------- 섹션 ---------- */
 
 .rs-sec {
-  display: grid;
-  grid-template-columns: 30mm 1fr;
-  gap: 0 6mm;
-  padding: 9px 0;
+  /* 그리드 대신 일반 블록 + 왼쪽 라벨 고정: 인쇄할 때 쪽 나눔이 자연스럽게 됩니다 */
+  position: relative;
+  padding: 9px 0 9px 36mm;
   border-bottom: 1px solid var(--line);
+}
+
+.rs-sec-label {
+  position: absolute;
+  left: 0;
+  top: 9px;
+  width: 30mm;
 }
 
 .rs-sec:last-of-type {
@@ -514,14 +520,16 @@ html[data-letter="on"] .rs-letter {
   }
 
   .rs-sec {
-    grid-template-columns: 1fr;
-    gap: 6px;
+    padding-left: 0;
   }
 
   .rs-sec-label {
+    position: static;
+    width: auto;
     display: flex;
     align-items: baseline;
     gap: 8px;
+    margin-bottom: 6px;
   }
 
   .rs-video-list {
@@ -590,10 +598,14 @@ html[data-letter="on"] .rs-letter {
     break-inside: avoid;
   }
 
-  .rs-sec-label,
   .rs-entry-head,
   .rs-letter-entry h3 {
     break-after: avoid;
+  }
+
+  /* 표로 된 짧은 섹션(스킬·학력·수상)은 쪽 사이에서 쪼개지지 않게 */
+  .rs-sec:has(.rs-table) {
+    break-inside: avoid;
   }
 
   html[data-letter="on"] .rs-letter {
