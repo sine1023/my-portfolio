@@ -129,8 +129,8 @@
   background: #fff;
   color: var(--ink);
   box-shadow: 0 2px 18px rgba(0, 0, 0, 0.12);
-  font-size: 9.3pt;
-  line-height: 1.55;
+  font-size: 9.2pt;
+  line-height: 1.5;
   font-weight: 400;
 }
 
@@ -220,14 +220,14 @@
 .rs-sec {
   /* 그리드 대신 일반 블록 + 왼쪽 라벨 고정: 인쇄할 때 쪽 나눔이 자연스럽게 됩니다 */
   position: relative;
-  padding: 9px 0 9px 36mm;
+  padding: 8px 0 8px 36mm;
   border-bottom: 1px solid var(--line);
 }
 
 .rs-sec-label {
   position: absolute;
   left: 0;
-  top: 9px;
+  top: 8px;
   width: 30mm;
 }
 
