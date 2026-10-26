@@ -13,7 +13,7 @@ import "./resume.css";
 export const revalidate = 0; // 관리자 페이지에서 고친 내용이 바로 반영되도록
 
 async function hasAccess() {
-  const pw = cookies().get(RESUME_COOKIE)?.value;
+  const pw = (await cookies()).get(RESUME_COOKIE)?.value;
   return isAdminPassword(pw);
 }
 

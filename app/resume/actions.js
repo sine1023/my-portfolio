@@ -11,7 +11,7 @@ import {
 export async function unlockResume(pw) {
   const ok = await isAdminPassword(pw);
   if (!ok) return false;
-  cookies().set(RESUME_COOKIE, pw, {
+  (await cookies()).set(RESUME_COOKIE, pw, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "strict",
@@ -22,5 +22,5 @@ export async function unlockResume(pw) {
 }
 
 export async function lockResume() {
-  cookies().set(RESUME_COOKIE, "", { path: "/resume", maxAge: 0 });
+  (await cookies()).set(RESUME_COOKIE, "", { path: "/resume", maxAge: 0 });
 }
