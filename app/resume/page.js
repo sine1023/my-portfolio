@@ -270,19 +270,26 @@ export default async function ResumePage() {
 
         {devProjects?.length > 0 && (
           <Section ko="사이드 프로젝트" en="Side Projects">
-            {devProjects.map((p) => (
-              <div className="rs-entry rs-entry-compact" key={p.title}>
-                <div className="rs-entry-head">
-                  <h3>
-                    {p.url ? <a href={p.url}>{p.title}</a> : p.title}
-                  </h3>
-                  {p.tags?.length > 0 && (
-                    <span className="rs-period">{p.tags.join(" · ")}</span>
-                  )}
+            {devProjects.map((p) =>
+              p.short ? (
+                // 이력서용 한 줄 설명이 있으면 "제목 — 설명" 한 줄로 (2쪽 안에 들어가게, 기술은 스킬에 따로 있어요)
+                <p className="rs-dev-line" key={p.title}>
+                  <b>{p.url ? <a href={p.url}>{p.title}</a> : p.title}</b> — {p.short}
+                </p>
+              ) : (
+                <div className="rs-entry rs-entry-compact" key={p.title}>
+                  <div className="rs-entry-head">
+                    <h3>
+                      {p.url ? <a href={p.url}>{p.title}</a> : p.title}
+                    </h3>
+                    {p.tags?.length > 0 && (
+                      <span className="rs-period">{p.tags.join(" · ")}</span>
+                    )}
+                  </div>
+                  <p>{p.desc}</p>
                 </div>
-                <p>{p.desc}</p>
-              </div>
-            ))}
+              )
+            )}
           </Section>
         )}
 

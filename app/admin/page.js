@@ -1553,6 +1553,18 @@ export default function AdminPage() {
                   rows={4}
                 />
                 <Field
+                  label="이력서용 한 줄 설명 (선택 — 비우면 위 설명을 그대로 써요)"
+                  value={row.short}
+                  onChange={(v) =>
+                    setPath((p) => {
+                      const arr = [...p.devProjects];
+                      arr[i] = { ...arr[i], short: v };
+                      return { ...p, devProjects: arr };
+                    })
+                  }
+                  placeholder="이력서 PDF가 2쪽을 넘지 않게 짧게"
+                />
+                <Field
                   label="관련 홈페이지 URL (선택)"
                   value={row.url}
                   onChange={(v) =>

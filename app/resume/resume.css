@@ -314,6 +314,23 @@
   margin-top: 7px;
 }
 
+/* 사이드 프로젝트 한 줄 표시 (이력서용 한 줄 설명이 있을 때) */
+.rs-dev-line {
+  margin: 0;
+  color: #3b3e3a;
+}
+.rs-dev-line + .rs-dev-line {
+  margin-top: 3px;
+}
+.rs-dev-line b {
+  color: #191b1d;
+  font-weight: 600;
+}
+.rs-dev-line a {
+  color: inherit;
+  text-decoration: none;
+}
+
 /* ---------- 표 ---------- */
 
 .rs-table {
@@ -593,6 +610,7 @@ html[data-letter="on"] .rs-letter {
 
   .rs-entry,
   .rs-entry-compact,
+  .rs-dev-line,
   .rs-table tr,
   .rs-letter-entry h3 {
     break-inside: avoid;
