@@ -61,7 +61,8 @@ export default function ViewsPage() {
   async function unlock(e) {
     e.preventDefault();
     setErr("");
-    const { data } = await supabase.rpc("check_portfolio_password", { pw });
+    const { data, error } = await supabase.rpc("check_portfolio_password", { pw });
+    if (error) { setErr(error.message || "확인 중 오류가 났어요."); return; } // 여러 번 틀려서 잠긴 경우 등
     if (data !== true) { setErr("비밀번호가 틀렸습니다."); return; }
     try { window.localStorage.setItem("portfolio_owner", "1"); } catch {}
     setUnlocked(true);
