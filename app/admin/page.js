@@ -339,6 +339,8 @@ export default function AdminPage() {
   }
 
   async function handleUnlock(pw) {
+    // 이 브라우저는 관리자 본인 — 포트폴리오 열람 기록에서 빼요
+    try { window.localStorage.setItem("portfolio_owner", "1"); } catch {}
     setPassword(pw);
     setLoading(true);
     const { data, error } = await supabase
@@ -412,6 +414,9 @@ export default function AdminPage() {
       >
         {openingResume ? "여는 중..." : "이력서 PDF로 보기 ↗"}
       </button>
+      <a href="/admin/views" className="a-resume-btn" style={{ marginLeft: 8, textDecoration: "none", display: "inline-block" }}>
+        👀 열람 기록 보기
+      </a>
 
       <div className="a-tabs">
         {TABS.map((t) => (

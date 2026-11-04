@@ -5,6 +5,7 @@ import {
   formatTotalCareer,
 } from "../lib/content";
 import SectionNav from "./components/SectionNav";
+import ViewTracker from "./components/ViewTracker";
 
 export const revalidate = 0; // 항상 최신 데이터로
 
@@ -127,6 +128,7 @@ export default async function Home() {
 
   return (
     <main>
+      <ViewTracker />
       <a href="/admin" className="top-admin-link" aria-label="관리자 로그인">
         <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2">
           <rect x="5" y="11" width="14" height="9" rx="2" />
